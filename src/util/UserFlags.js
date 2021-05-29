@@ -18,7 +18,6 @@ class UserFlags extends BitField {}
  * Numeric user flags. All available properties:
  * * `DISCORD_EMPLOYEE`
  * * `PARTNERED_SERVER_OWNER`
- * * `DISCORD_PARTNER` **(deprecated)**
  * * `HYPESQUAD_EVENTS`
  * * `BUGHUNTER_LEVEL_1`
  * * `HOUSE_BRAVERY`
@@ -30,14 +29,13 @@ class UserFlags extends BitField {}
  * * `BUGHUNTER_LEVEL_2`
  * * `VERIFIED_BOT`
  * * `EARLY_VERIFIED_BOT_DEVELOPER`
- * * `VERIFIED_DEVELOPER` **(deprecated)**
+ * * `DISCORD_CERTIFIED_MODERATOR`
  * @type {Object}
  * @see {@link https://discord.com/developers/docs/resources/user#user-object-user-flags}
  */
 UserFlags.FLAGS = {
   DISCORD_EMPLOYEE: 1 << 0,
   PARTNERED_SERVER_OWNER: 1 << 1,
-  DISCORD_PARTNER: 1 << 1,
   HYPESQUAD_EVENTS: 1 << 2,
   BUGHUNTER_LEVEL_1: 1 << 3,
   HOUSE_BRAVERY: 1 << 6,
@@ -49,7 +47,7 @@ UserFlags.FLAGS = {
   BUGHUNTER_LEVEL_2: 1 << 14,
   VERIFIED_BOT: 1 << 16,
   EARLY_VERIFIED_DEVELOPER: 1 << 17,
-  VERIFIED_DEVELOPER: 1 << 17,
+  DISCORD_CERTIFIED_MODERATOR: 1 << 18
 };
 
 module.exports = UserFlags;
