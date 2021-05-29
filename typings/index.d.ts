@@ -3196,7 +3196,6 @@ declare module 'discord.js' {
   type UserFlagsString =
     | 'DISCORD_EMPLOYEE'
     | 'PARTNERED_SERVER_OWNER'
-    | 'DISCORD_PARTNER'
     | 'HYPESQUAD_EVENTS'
     | 'BUGHUNTER_LEVEL_1'
     | 'HOUSE_BRAVERY'
@@ -3208,7 +3207,7 @@ declare module 'discord.js' {
     | 'BUGHUNTER_LEVEL_2'
     | 'VERIFIED_BOT'
     | 'EARLY_VERIFIED_DEVELOPER'
-    | 'VERIFIED_DEVELOPER';
+    | 'DISCORD_CERTIFIED_MODERATOR';
 
   type UserResolvable = User | Snowflake | Message | GuildMember;
 
