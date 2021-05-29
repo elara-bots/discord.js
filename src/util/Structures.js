@@ -9,6 +9,7 @@
  * * **`CategoryChannel`**
  * * **`NewsChannel`**
  * * **`StoreChannel`**
+ * * **`StageChannel`**
  * * **`GuildMember`**
  * * **`Guild`**
  * * **`Message`**
@@ -94,6 +95,7 @@ const structures = {
   GuildEmoji: require('../structures/GuildEmoji'),
   DMChannel: require('../structures/DMChannel'),
   TextChannel: require('../structures/TextChannel'),
+  StageChannel: require('../structures/StageChannel'),
   VoiceChannel: require('../structures/VoiceChannel'),
   CategoryChannel: require('../structures/CategoryChannel'),
   NewsChannel: require('../structures/NewsChannel'),
