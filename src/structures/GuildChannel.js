@@ -16,6 +16,7 @@ const Util = require('../util/Util');
  * - {@link CategoryChannel}
  * - {@link NewsChannel}
  * - {@link StoreChannel}
+ * - {@link StageChannel}
  * @extends {Channel}
  * @abstract
  */
