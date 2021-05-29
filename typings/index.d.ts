@@ -7,6 +7,7 @@ declare enum ChannelType {
   news = 5,
   store = 6,
   unknown = 7,
+  stage = 13,
 }
 
 declare module 'discord.js' {
@@ -804,6 +805,7 @@ declare module 'discord.js' {
     public readonly displayColor: number;
     public readonly displayHexColor: string;
     public readonly displayName: string;
+    public readonly pending: boolean;
     public guild: Guild;
     public readonly id: Snowflake;
     public readonly joinedAt: Date | null;
@@ -959,6 +961,7 @@ declare module 'discord.js' {
     public activity: MessageActivity | null;
     public application: ClientApplication | null;
     public attachments: Collection<Snowflake, MessageAttachment>;
+    public stickers: Collection<Snowflake, Sticker>;
     public author: User;
     public channel: TextChannel | DMChannel | NewsChannel;
     public readonly cleanContent: string;
@@ -1022,6 +1025,19 @@ declare module 'discord.js' {
     public toJSON(): object;
     public toString(): string;
     public unpin(options?: { reason?: string }): Promise<Message>;
+  }
+  export class Sticker extends Base {
+    constructor(client: Client, data: object);
+    public asset: string;
+    public readonly createdTimestamp: number;
+    public readonly createdAt: Date;
+    public description: string;
+    public format: StickerFormatTypes;
+    public id: Snowflake;
+    public name: string;
+    public packID: Snowflake;
+    public tags: string[];
+    public readonly url: string;
   }
 
   export class MessageAttachment {
@@ -1268,7 +1284,12 @@ declare module 'discord.js' {
     public largeImageURL(options?: ImageURLOptions): string | null;
     public smallImageURL(options?: ImageURLOptions): string | null;
   }
-
+  
+  interface RoleTagData {
+    botID?: Snowflake;
+    integrationID?: Snowflake;
+    premiumSubscriberRole?: true;
+  }
   export class Role extends Base {
     constructor(client: Client, data: object, guild: Guild);
     public color: number;
@@ -1281,6 +1302,7 @@ declare module 'discord.js' {
     public hoist: boolean;
     public id: Snowflake;
     public managed: boolean;
+    public tags: RoleTagData | null;
     public readonly members: Collection<Snowflake, GuildMember>;
     public mentionable: boolean;
     public name: string;
@@ -1612,17 +1634,10 @@ declare module 'discord.js' {
     public once(event: string, listener: (...args: any[]) => void): this;
   }
 
-  export class VoiceChannel extends GuildChannel {
-    constructor(guild: Guild, data?: object);
-    public bitrate: number;
+  export class VoiceChannel extends BaseGuildVoiceChannel {
     public readonly editable: boolean;
-    public readonly full: boolean;
-    public readonly joinable: boolean;
     public readonly speakable: boolean;
     public type: 'voice';
-    public userLimit: number;
-    public join(): Promise<VoiceConnection>;
-    public leave(): void;
     public setBitrate(bitrate: number, reason?: string): Promise<VoiceChannel>;
     public setUserLimit(userLimit: number, reason?: string): Promise<VoiceChannel>;
   }
@@ -1944,12 +1959,31 @@ declare module 'discord.js' {
     public prune(options?: GuildPruneMembersOptions): Promise<number>;
     public unban(user: UserResolvable, reason?: string): Promise<User>;
   }
-
+  
+  export class StageChannel extends BaseGuildVoiceChannel {
+    public topic: string | null;
+    public type: 'stage';
+  }
+  export class BaseGuildVoiceChannel extends GuildChannel {
+    constructor(guild: Guild, data?: object);
+    public readonly members: Collection<Snowflake, GuildMember>;
+    public readonly full: boolean;
+    public readonly joinable: boolean;
+    public rtcRegion: string | null;
+    public bitrate: number;
+    public userLimit: number;
+    public join(): Promise<VoiceConnection>;
+    public leave(): void;
+    public setRTCRegion(region: string | null): Promise<this>;
+  }
+  
   export class GuildMemberRoleManager extends OverridableManager<Snowflake, Role, RoleResolvable> {
     constructor(member: GuildMember);
     public readonly hoist: Role | null;
     public readonly color: Role | null;
     public readonly highest: Role;
+    public readonly premiumSubscriberRole: Role | null;
+    public readonly botRole: Role | null;
     public member: GuildMember;
     public guild: Guild;
 
@@ -2009,6 +2043,8 @@ declare module 'discord.js' {
     constructor(guild: Guild, iterable?: Iterable<any>);
     public readonly everyone: Role;
     public readonly highest: Role;
+    public readonly premiumSubscriberRole: Role | null;
+    public botRoleFor(user: UserResolvable): Role | null;
     public guild: Guild;
 
     public create(options?: { data?: RoleData; reason?: string }): Promise<Role>;
@@ -2232,8 +2268,9 @@ declare module 'discord.js' {
     id: RoleResolvable | UserResolvable;
   }
 
-  interface ChannelData {
+   interface ChannelData {
     name?: string;
+    type?: Pick<typeof ChannelType, 'text' | 'news'>;
     position?: number;
     topic?: string;
     nsfw?: boolean;
@@ -2243,6 +2280,7 @@ declare module 'discord.js' {
     rateLimitPerUser?: number;
     lockPermissions?: boolean;
     permissionOverwrites?: readonly OverwriteResolvable[] | Collection<Snowflake, OverwriteResolvable>;
+    rtcRegion?: string | null;
   }
 
   interface ChannelLogsQueryOptions {
