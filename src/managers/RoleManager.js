@@ -123,6 +123,27 @@ class RoleManager extends BaseManager {
         return role;
       });
   }
+  
+  /**
+   * Gets the managed role a user created when joining the guild, if any
+   * <info>Only ever available for bots</info>
+   * @param {UserResolvable} user The user to access the bot role for
+   * @returns {?Role}
+   */
+  botRoleFor(user) {
+    const userID = this.client.users.resolveID(user);
+    if (!userID) return null;
+    return this.cache.find(role => role.tags?.botID === userID) ?? null;
+  }
+  
+  /**
+   * The premium subscriber role of the guild, if any
+   * @type {?Role}
+   * @readonly
+   */
+  get premiumSubscriberRole() {
+    return this.cache.find(role => role.tags?.premiumSubscriberRole) ?? null;
+  }
 
   /**
    * The `@everyone` role of the guild
