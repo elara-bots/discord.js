@@ -437,6 +437,15 @@ exports.MessageTypes = [
  */
 exports.ActivityTypes = ['PLAYING', 'STREAMING', 'LISTENING', 'WATCHING', 'CUSTOM_STATUS', 'COMPETING'];
 
+/**
+ * The value set for a sticker's type:
+ * * PNG
+ * * APNG
+ * * LOTTIE
+ * @typedef {string} StickerFormatTypes
+ */
+exports.StickerFormatTypes = [ 'PNG', 'APNG', 'LOTTIE' ];
+
 exports.ChannelTypes = {
   TEXT: 0,
   DM: 1,
