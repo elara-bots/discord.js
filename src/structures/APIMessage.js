@@ -197,7 +197,18 @@ class APIMessage {
         allowedMentions = { users: [id] };
       }
     }
-
+    let message_reference;
+    if (typeof this.options.replyTo === 'object') {
+      const message_id = this.isMessage
+        ? this.target.channel.messages.resolveID(this.options.reply.messageReference)
+        : this.target.messages.resolveID(this.options.reply.messageReference);
+      if (message_id) {
+        message_reference = {
+          message_id,
+          fail_if_not_exists: this.options.reply.failIfNotExists ?? true,
+        };
+      }
+    }
     this.data = {
       content,
       tts,
@@ -206,6 +217,7 @@ class APIMessage {
       embeds,
       username,
       avatar_url: avatarURL,
+      message_reference,
       allowed_mentions: typeof content === 'undefined' ? undefined : allowedMentions,
       flags,
     };
