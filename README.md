@@ -35,16 +35,25 @@ I've added and removed certain stuff from it. As it's either not really used in 
 
 ### **Removed**
 `messageEditHistoryMaxSize` and message edit history 
+
 `lastMessageID`, `lastPinTimestamp`, `lastMessageChannelID` `lastMessage`, `lastPinTimestamp` fields
+
 `GuildEmoji#deletable` and `GuildEmoji#setName`
+
 `GuildMember#partial`, `GuildMember#kickable`, `GuildMember#bannable`, `GuildMember#setNickname`, `GuildMember#hasPermission` (it's been deprecated for ages now)
 
 `Invite#deletable`
+
 `Message#pinnable`, `Message#crosspostable`
+
 `Role#setName`, `Role#setHoist`, `Role#setPosition` and `Role#setMentionable`
+
 `TextChannel#setRateLimitPerUser`, `TextChannel#setNSFW`, `TextChannel#typingIn`, `TextChannel#typingSinceIn`, `TextChannel#typingDurationIn`
+
 `VoiceChannel#setUserLimit`
+
 `VoiceState#setMute`, `VoiceState#setDeaf`, `VoiceState#setSelfDeaf` and `VoiceState#setSelfMute`
+
 `WebhookClient#sendSlackMessage` (who tf uses that)
 
 ### **Updated**:
