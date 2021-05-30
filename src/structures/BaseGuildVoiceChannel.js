@@ -80,6 +80,17 @@ class BaseGuildVoiceChannel extends GuildChannel {
   }
 
   /**
+   * Whether the channel is joinable by the client user
+   * @type {boolean}
+   * @readonly
+   */
+     get joinable() {
+      if (!this.viewable) return false;
+      if (!this.permissionsFor(this.client.user).has(Permissions.FLAGS.CONNECT, false)) return false;
+      return true;
+    }
+
+  /**
    * Sets the RTC region of the channel.
    * @param {?string} region The new region of the channel. Set to `null` to remove a specific region for the channel
    * @returns {Promise<BaseGuildVoiceChannel>}

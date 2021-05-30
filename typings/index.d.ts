@@ -980,7 +980,6 @@ declare module 'discord.js' {
     public components: Components[];
     public author: User;
     public channel: TextChannel | DMChannel | NewsChannel;
-    public readonly cleanContent: string;
     public content: string;
     public readonly createdAt: Date;
     public createdTimestamp: number;
@@ -996,7 +995,6 @@ declare module 'discord.js' {
     public mentions: MessageMentions;
     public nonce: string | null;
     public readonly partial: false;
-    public readonly pinnable: boolean;
     public pinned: boolean;
     public reactions: ReactionManager;
     public system: boolean;
@@ -1115,7 +1113,7 @@ declare module 'discord.js' {
     public setImage(url: string): this;
     public setThumbnail(url: string): this;
     public setTimestamp(timestamp?: Date | number): this;
-    public setTitle(title: StringResolvable): this;
+    public setTitle(title: StringResolvable, url: string): this;
     public setURL(url: string): this;
     public spliceFields(index: number, deleteCount: number, ...fields: EmbedFieldData[] | EmbedFieldData[][]): this;
     public toJSON(): object;
@@ -1330,11 +1328,7 @@ declare module 'discord.js' {
     public equals(role: Role): boolean;
     public permissionsIn(channel: ChannelResolvable): Readonly<Permissions>;
     public setColor(color: ColorResolvable, reason?: string): Promise<Role>;
-    public setHoist(hoist: boolean, reason?: string): Promise<Role>;
-    public setMentionable(mentionable: boolean, reason?: string): Promise<Role>;
-    public setName(name: string, reason?: string): Promise<Role>;
     public setPermissions(permissions: PermissionResolvable, reason?: string): Promise<Role>;
-    public setPosition(position: number, options?: { relative?: boolean; reason?: string }): Promise<Role>;
     public toJSON(): object;
     public toString(): string;
 
@@ -1549,8 +1543,6 @@ declare module 'discord.js' {
       name: string,
       options?: { avatar?: BufferResolvable | Base64Resolvable; reason?: string },
     ): Promise<Webhook>;
-    public setNSFW(nsfw: boolean, reason?: string): Promise<TextChannel>;
-    public setRateLimitPerUser(rateLimitPerUser: number, reason?: string): Promise<TextChannel>;
     public fetchWebhooks(): Promise<Collection<Snowflake, Webhook>>;
   }
 
@@ -1579,9 +1571,6 @@ declare module 'discord.js' {
     public fetch(force?: boolean): Promise<User>;
     public fetchFlags(force?: boolean): Promise<UserFlags>;
     public toString(): string;
-    public typingDurationIn(channel: ChannelResolvable): number;
-    public typingIn(channel: ChannelResolvable): boolean;
-    public typingSinceIn(channel: ChannelResolvable): Date;
   }
 
   export class UserFlags extends BitField<UserFlagsString> {
@@ -1750,13 +1739,8 @@ declare module 'discord.js' {
     public streaming: boolean;
     public selfVideo: boolean;
     public readonly speaking: boolean | null;
-
-    public setDeaf(deaf: boolean, reason?: string): Promise<GuildMember>;
-    public setMute(mute: boolean, reason?: string): Promise<GuildMember>;
     public kick(reason?: string): Promise<GuildMember>;
     public setChannel(channel: ChannelResolvable | null, reason?: string): Promise<GuildMember>;
-    public setSelfDeaf(deaf: boolean): Promise<boolean>;
-    public setSelfMute(mute: boolean): Promise<boolean>;
   }
 
   class VolumeInterface extends EventEmitter {
@@ -3070,10 +3054,8 @@ declare module 'discord.js' {
       | 'attachments'
       | 'channel'
       | 'deletable'
-      | 'crosspostable'
       | 'editable'
       | 'mentions'
-      | 'pinnable'
       | 'url'
       | 'flags'
       | 'embeds'
@@ -3081,12 +3063,10 @@ declare module 'discord.js' {
     attachments: Message['attachments'];
     channel: Message['channel'];
     readonly deletable: boolean;
-    readonly crosspostable: boolean;
     readonly editable: boolean;
     embeds: Message['embeds'];
     flags: Message['flags'];
     mentions: Message['mentions'];
-    readonly pinnable: boolean;
     reactions: Message['reactions'];
     readonly url: string;
   }

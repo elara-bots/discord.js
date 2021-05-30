@@ -26,6 +26,16 @@ class VoiceChannel extends BaseGuildVoiceChannel {
     return this.manageable && this.permissionsFor(this.client.user).has(Permissions.FLAGS.CONNECT, false);
   }
 
+    /**
+   * Whether the channel is joinable by the client user
+   * @type {boolean}
+   * @readonly
+   */
+     get joinable() {
+      if (!super.joinable) return false;
+      if (this.full && !this.permissionsFor(this.client.user).has(Permissions.FLAGS.MOVE_MEMBERS, false)) return false;
+      return true;
+    }
 
   /**
    * Sets the bitrate of the channel.
