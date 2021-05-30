@@ -346,6 +346,7 @@ declare module 'discord.js' {
         DefaultAvatar: (id: string | number) => string;
         Emoji: (emojiID: string, format: 'png' | 'gif') => string;
         Avatar: (userID: string | number, hash: string, format: 'default' | AllowedImageFormat, size: number) => string;
+        GuildAvatar: (guildID: string | number, memberID: string | number, hash: string, format: 'default' | AllowedImageFormat, size: number) => string;
         Banner: (guildID: string | number, hash: string, format: AllowedImageFormat, size: number) => string;
         Icon: (userID: string | number, hash: string, format: 'default' | AllowedImageFormat, size: number) => string;
         AppIcon: (userID: string | number, hash: string, format: AllowedImageFormat, size: number) => string;
@@ -802,6 +803,7 @@ declare module 'discord.js' {
     constructor(client: Client, data: object, guild: Guild);
     public readonly bannable: boolean;
     public deleted: boolean;
+    public avatar: string | null;
     public readonly displayColor: number;
     public readonly displayHexColor: string;
     public readonly displayName: string;
@@ -822,6 +824,8 @@ declare module 'discord.js' {
     public readonly roles: GuildMemberRoleManager;
     public user: User;
     public readonly voice: VoiceState;
+    public avatarURL(options?: ImageURLOptions & { dynamic?: boolean }): string | null;
+    public displayAvatarURL(options?: ImageURLOptions & { dynamic?: boolean }): string;
     public ban(options?: BanOptions): Promise<GuildMember>;
     public fetch(force?: boolean): Promise<GuildMember>;
     public createDM(force?: boolean): Promise<DMChannel>;
