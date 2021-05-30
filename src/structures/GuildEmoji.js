@@ -43,16 +43,6 @@ class GuildEmoji extends BaseGuildEmoji {
   }
 
   /**
-   * Whether the emoji is deletable by the client user
-   * @type {boolean}
-   * @readonly
-   */
-  get deletable() {
-    if (!this.guild.me) throw new Error('GUILD_UNCACHED_ME');
-    return !this.managed && this.guild.me.hasPermission(Permissions.FLAGS.MANAGE_EMOJIS);
-  }
-
-  /**
    * A manager for roles this emoji is active for.
    * @type {GuildEmojiRoleManager}
    * @readonly
@@ -114,16 +104,6 @@ class GuildEmoji extends BaseGuildEmoji {
         clone._patch(newData);
         return clone;
       });
-  }
-
-  /**
-   * Sets the name of the emoji.
-   * @param {string} name The new name for the emoji
-   * @param {string} [reason] Reason for changing the emoji's name
-   * @returns {Promise<GuildEmoji>}
-   */
-  setName(name, reason) {
-    return this.edit({ name }, reason);
   }
 
   /**

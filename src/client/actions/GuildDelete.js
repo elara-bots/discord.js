@@ -31,9 +31,7 @@ class GuildDeleteAction extends Action {
 
         // Stops the GuildDelete packet thinking a guild was actually deleted,
         // handles emitting of event itself
-        return {
-          guild: null,
-        };
+        return { guild: null };
       }
 
       for (const channel of guild.channels.cache.values()) this.client.channels.remove(channel.id);

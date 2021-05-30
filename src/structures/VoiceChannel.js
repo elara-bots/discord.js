@@ -26,25 +26,6 @@ class VoiceChannel extends BaseGuildVoiceChannel {
     return this.manageable && this.permissionsFor(this.client.user).has(Permissions.FLAGS.CONNECT, false);
   }
 
-  /**
-   * Whether the channel is joinable by the client user
-   * @type {boolean}
-   * @readonly
-   */
-  get joinable() {
-    if (!super.joinable) return false;
-    if (this.full && !this.permissionsFor(this.client.user).has(Permissions.FLAGS.MOVE_MEMBERS, false)) return false;
-    return true;
-  }
-
-  /**
-   * Checks if the client has permission to send audio to the voice channel
-   * @type {boolean}
-   * @readonly
-   */
-  get speakable() {
-    return this.permissionsFor(this.client.user).has(Permissions.FLAGS.SPEAK, false);
-  }
 
   /**
    * Sets the bitrate of the channel.
@@ -59,21 +40,6 @@ class VoiceChannel extends BaseGuildVoiceChannel {
    */
   setBitrate(bitrate, reason) {
     return this.edit({ bitrate }, reason);
-  }
-
-  /**
-   * Sets the user limit of the channel.
-   * @param {number} userLimit The new user limit
-   * @param {string} [reason] Reason for changing the user limit
-   * @returns {Promise<VoiceChannel>}
-   * @example
-   * // Set the user limit of a voice channel
-   * voiceChannel.setUserLimit(42)
-   *   .then(vc => console.log(`Set user limit to ${vc.userLimit} for ${vc.name}`))
-   *   .catch(console.error);
-   */
-  setUserLimit(userLimit, reason) {
-    return this.edit({ userLimit }, reason);
   }
 
   /**

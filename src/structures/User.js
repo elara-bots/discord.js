@@ -97,17 +97,6 @@ class User extends Base {
       this.flags = new UserFlags(data.public_flags);
     }
 
-    /**
-     * The ID of the last message sent by the user, if one was sent
-     * @type {?Snowflake}
-     */
-    this.lastMessageID = null;
-
-    /**
-     * The ID of the channel for the last message sent by the user, if one was sent
-     * @type {?Snowflake}
-     */
-    this.lastMessageChannelID = null;
   }
 
   /**
@@ -135,16 +124,6 @@ class User extends Base {
    */
   get createdAt() {
     return new Date(this.createdTimestamp);
-  }
-
-  /**
-   * The Message object of the last message sent by the user, if one was sent
-   * @type {?Message}
-   * @readonly
-   */
-  get lastMessage() {
-    const channel = this.client.channels.cache.get(this.lastMessageChannelID);
-    return (channel && channel.messages.cache.get(this.lastMessageID)) || null;
   }
 
   /**
@@ -197,36 +176,6 @@ class User extends Base {
    */
   get tag() {
     return typeof this.username === 'string' ? `${this.username}#${this.discriminator}` : null;
-  }
-
-  /**
-   * Checks whether the user is typing in a channel.
-   * @param {ChannelResolvable} channel The channel to check in
-   * @returns {boolean}
-   */
-  typingIn(channel) {
-    channel = this.client.channels.resolve(channel);
-    return channel._typing.has(this.id);
-  }
-
-  /**
-   * Gets the time that the user started typing.
-   * @param {ChannelResolvable} channel The channel to get the time in
-   * @returns {?Date}
-   */
-  typingSinceIn(channel) {
-    channel = this.client.channels.resolve(channel);
-    return channel._typing.has(this.id) ? new Date(channel._typing.get(this.id).since) : null;
-  }
-
-  /**
-   * Gets the amount of time the user has been typing in a channel for (in milliseconds), or -1 if they're not typing.
-   * @param {ChannelResolvable} channel The channel to get the time in
-   * @returns {number}
-   */
-  typingDurationIn(channel) {
-    channel = this.client.channels.resolve(channel);
-    return channel._typing.has(this.id) ? channel._typing.get(this.id).elapsedTime : -1;
   }
 
   /**
@@ -322,9 +271,7 @@ class User extends Base {
       {
         createdTimestamp: true,
         defaultAvatarURL: true,
-        tag: true,
-        lastMessage: false,
-        lastMessageID: false,
+        tag: true
       },
       ...props,
     );

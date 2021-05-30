@@ -245,21 +245,6 @@ class Role extends Base {
   }
 
   /**
-   * Sets a new name for the role.
-   * @param {string} name The new name of the role
-   * @param {string} [reason] Reason for changing the role's name
-   * @returns {Promise<Role>}
-   * @example
-   * // Set the name of the role
-   * role.setName('new role')
-   *   .then(updated => console.log(`Updated role name to ${updated.name}`))
-   *   .catch(console.error);
-   */
-  setName(name, reason) {
-    return this.edit({ name }, reason);
-  }
-
-  /**
    * Sets a new color for the role.
    * @param {ColorResolvable} color The color of the role
    * @param {string} [reason] Reason for changing the role's color
@@ -272,21 +257,6 @@ class Role extends Base {
    */
   setColor(color, reason) {
     return this.edit({ color }, reason);
-  }
-
-  /**
-   * Sets whether or not the role should be hoisted.
-   * @param {boolean} hoist Whether or not to hoist the role
-   * @param {string} [reason] Reason for setting whether or not the role should be hoisted
-   * @returns {Promise<Role>}
-   * @example
-   * // Set the hoist of the role
-   * role.setHoist(true)
-   *   .then(updated => console.log(`Role hoisted: ${updated.hoist}`))
-   *   .catch(console.error);
-   */
-  setHoist(hoist, reason) {
-    return this.edit({ hoist }, reason);
   }
 
   /**
@@ -308,52 +278,7 @@ class Role extends Base {
   setPermissions(permissions, reason) {
     return this.edit({ permissions }, reason);
   }
-
-  /**
-   * Sets whether this role is mentionable.
-   * @param {boolean} mentionable Whether this role should be mentionable
-   * @param {string} [reason] Reason for setting whether or not this role should be mentionable
-   * @returns {Promise<Role>}
-   * @example
-   * // Make the role mentionable
-   * role.setMentionable(true)
-   *   .then(updated => console.log(`Role updated ${updated.name}`))
-   *   .catch(console.error);
-   */
-  setMentionable(mentionable, reason) {
-    return this.edit({ mentionable }, reason);
-  }
-
-  /**
-   * Sets the position of the role.
-   * @param {number} position The position of the role
-   * @param {Object} [options] Options for setting position
-   * @param {boolean} [options.relative=false] Change the position relative to its current value
-   * @param {string} [options.reason] Reason for changing the position
-   * @returns {Promise<Role>}
-   * @example
-   * // Set the position of the role
-   * role.setPosition(1)
-   *   .then(updated => console.log(`Role position: ${updated.position}`))
-   *   .catch(console.error);
-   */
-  setPosition(position, { relative, reason } = {}) {
-    return Util.setPosition(
-      this,
-      position,
-      relative,
-      this.guild._sortedRoles(),
-      this.client.api.guilds(this.guild.id).roles,
-      reason,
-    ).then(updatedRoles => {
-      this.client.actions.GuildRolesPositionUpdate.handle({
-        guild_id: this.guild.id,
-        roles: updatedRoles,
-      });
-      return this;
-    });
-  }
-
+  
   /**
    * Deletes the role.
    * @param {string} [reason] Reason for deleting this role

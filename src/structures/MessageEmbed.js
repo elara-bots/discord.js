@@ -242,7 +242,8 @@ class MessageEmbed {
       (this.fields.length >= 1
         ? this.fields.reduce((prev, curr) => prev + curr.name.length + curr.value.length, 0)
         : 0) +
-      (this.footer ? this.footer.text.length : 0)
+      (this.footer ? this.footer.text.length : 0) +
+      (this.author ? this.author.name.length : 0)
     );
   }
 
@@ -318,8 +319,7 @@ class MessageEmbed {
    * @returns {MessageEmbed}
    */
   setDescription(description) {
-    description = Util.resolveString(description);
-    this.description = description;
+    this.description = Util.resolveString(description);
     return this;
   }
 
@@ -330,8 +330,7 @@ class MessageEmbed {
    * @returns {MessageEmbed}
    */
   setFooter(text, iconURL) {
-    text = Util.resolveString(text);
-    this.footer = { text, iconURL };
+    this.footer = { text: Util.resolveString(text), iconURL };
     return this;
   }
 
@@ -369,11 +368,12 @@ class MessageEmbed {
   /**
    * Sets the title of this embed.
    * @param {StringResolvable} title The title
+   * @param {StringResolvable} url The title-url
    * @returns {MessageEmbed}
    */
-  setTitle(title) {
-    title = Util.resolveString(title);
-    this.title = title;
+  setTitle(title, url) {
+    this.title = Util.resolveString(title);
+    if(url) this.setURL(url);
     return this;
   }
 

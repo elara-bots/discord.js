@@ -209,6 +209,10 @@ class APIMessage {
         };
       }
     }
+
+    let components = undefined;
+    if(this.options.components && Array.isArray(this.options.components)) components = this.options.components
+
     this.data = {
       content,
       tts,
@@ -216,10 +220,12 @@ class APIMessage {
       embed: this.options.embed === null ? null : embeds[0],
       embeds,
       username,
+      components,
       avatar_url: avatarURL,
       message_reference,
       allowed_mentions: typeof content === 'undefined' ? undefined : allowedMentions,
       flags,
+      attachments: this.options.attachments
     };
     return this;
   }

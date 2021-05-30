@@ -385,10 +385,6 @@ class Client extends BaseClient {
    */
   async generateInvite(options = {}) {
     if (Array.isArray(options) || ['string', 'number'].includes(typeof options) || options instanceof Permissions) {
-      process.emitWarning(
-        'Client#generateInvite: Generate invite with an options object instead of a PermissionResolvable',
-        'DeprecationWarning',
-      );
       options = { permissions: options };
     }
     const application = await this.fetchApplication();
@@ -449,13 +445,6 @@ class Client extends BaseClient {
     }
     if (typeof options.messageSweepInterval !== 'number' || isNaN(options.messageSweepInterval)) {
       throw new TypeError('CLIENT_INVALID_OPTION', 'messageSweepInterval', 'a number');
-    }
-    if (
-      typeof options.messageEditHistoryMaxSize !== 'number' ||
-      isNaN(options.messageEditHistoryMaxSize) ||
-      options.messageEditHistoryMaxSize < -1
-    ) {
-      throw new TypeError('CLIENT_INVALID_OPTION', 'messageEditHistoryMaxSize', 'a number greater than or equal to -1');
     }
     if (typeof options.fetchAllMembers !== 'boolean') {
       throw new TypeError('CLIENT_INVALID_OPTION', 'fetchAllMembers', 'a boolean');

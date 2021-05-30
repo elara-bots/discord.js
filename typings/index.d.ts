@@ -50,6 +50,19 @@ declare module 'discord.js' {
     public static FLAGS: Record<ActivityFlagsString, number>;
     public static resolve(bit?: BitFieldResolvable<ActivityFlagsString>): number;
   }
+  
+  export type Components = {
+      type: number;
+      components: {
+        custom_id: string;
+        style: number;
+        type: number;
+        label: string;
+        emoji?: { name?: string, id?: string, animated?: boolean };
+        disabled?: boolean;
+        url?: string;
+      }[]
+  }
 
   export class APIMessage {
     constructor(target: MessageTarget, options: MessageOptions | WebhookMessageOptions);
@@ -813,7 +826,6 @@ declare module 'discord.js' {
     public readonly joinedAt: Date | null;
     public joinedTimestamp: number | null;
     public readonly kickable: boolean;
-    public lastMessageChannelID: Snowflake | null;
     public readonly manageable: boolean;
     public nickname: string | null;
     public readonly partial: false;
@@ -959,13 +971,13 @@ declare module 'discord.js' {
 
   export class Message extends Base {
     constructor(client: Client, data: object, channel: TextChannel | DMChannel | NewsChannel);
-    private _edits: Message[];
     private patch(data: object): Message;
 
     public activity: MessageActivity | null;
     public application: ClientApplication | null;
     public attachments: Collection<Snowflake, MessageAttachment>;
     public stickers: Collection<Snowflake, Sticker>;
+    public components: Components[];
     public author: User;
     public channel: TextChannel | DMChannel | NewsChannel;
     public readonly cleanContent: string;
@@ -977,7 +989,6 @@ declare module 'discord.js' {
     public readonly editable: boolean;
     public readonly editedAt: Date | null;
     public editedTimestamp: number | null;
-    public readonly edits: Message[];
     public embeds: MessageEmbed[];
     public readonly guild: Guild | null;
     public id: Snowflake;
@@ -1554,7 +1565,6 @@ declare module 'discord.js' {
     public readonly dmChannel: DMChannel | null;
     public flags: Readonly<UserFlags> | null;
     public id: Snowflake;
-    public lastMessageID: Snowflake | null;
     public locale: string | null;
     public readonly partial: false;
     public readonly presence: Presence;
@@ -1643,7 +1653,6 @@ declare module 'discord.js' {
     public readonly speakable: boolean;
     public type: 'voice';
     public setBitrate(bitrate: number, reason?: string): Promise<VoiceChannel>;
-    public setUserLimit(userLimit: number, reason?: string): Promise<VoiceChannel>;
   }
 
   class VoiceConnection extends EventEmitter {
@@ -2082,8 +2091,6 @@ declare module 'discord.js' {
   ): Constructable<T & Omit<TextBasedChannelFields, I>>;
 
   interface PartialTextBasedChannelFields {
-    lastMessageID: Snowflake | null;
-    readonly lastMessage: Message | null;
     send(
       content: APIMessageContentResolvable | (MessageOptions & { split?: false }) | MessageAdditions,
     ): Promise<Message>;
@@ -2096,8 +2103,6 @@ declare module 'discord.js' {
 
   interface TextBasedChannelFields extends PartialTextBasedChannelFields {
     _typing: Map<string, TypingData>;
-    lastPinTimestamp: number | null;
-    readonly lastPinAt: Date | null;
     typing: boolean;
     typingCount: number;
     awaitMessages(filter: CollectorFilter, options?: AwaitMessagesOptions): Promise<Collection<Snowflake, Message>>;
@@ -2135,7 +2140,6 @@ declare module 'discord.js' {
       options: WebhookMessageOptions & { split: true | SplitOptions },
     ): Promise<Message[]>;
     send(content: StringResolvable, options: WebhookMessageOptions): Promise<Message | Message[]>;
-    sendSlackMessage(body: object): Promise<boolean>;
   }
 
   //#endregion
@@ -2364,7 +2368,6 @@ declare module 'discord.js' {
     messageCacheMaxSize?: number;
     messageCacheLifetime?: number;
     messageSweepInterval?: number;
-    messageEditHistoryMaxSize?: number;
     fetchAllMembers?: boolean;
     disableMentions?: 'none' | 'all' | 'everyone';
     allowedMentions?: MessageMentionOptions;
@@ -2877,6 +2880,7 @@ declare module 'discord.js' {
     embed?: MessageEmbed | MessageEmbedOptions;
     disableMentions?: 'none' | 'all' | 'everyone';
     allowedMentions?: MessageMentionOptions;
+    components: Components[];
     files?: (FileOptions | BufferResolvable | Stream | MessageAttachment)[];
     code?: string | boolean;
     split?: boolean | SplitOptions;
@@ -3007,10 +3011,8 @@ declare module 'discord.js' {
   interface PartialDMChannel
     extends Partialize<
       DMChannel,
-      'lastMessage' | 'lastMessageID' | 'messages' | 'recipient' | 'type' | 'typing' | 'typingCount'
+      'messages' | 'recipient' | 'type' | 'typing' | 'typingCount'
     > {
-    lastMessage: null;
-    lastMessageID: undefined;
     messages: MessageManager;
     recipient: User | PartialUser;
     type: 'dm';
@@ -3074,7 +3076,6 @@ declare module 'discord.js' {
       | 'pinnable'
       | 'url'
       | 'flags'
-      | 'edits'
       | 'embeds'
     > {
     attachments: Message['attachments'];
@@ -3082,7 +3083,6 @@ declare module 'discord.js' {
     readonly deletable: boolean;
     readonly crosspostable: boolean;
     readonly editable: boolean;
-    readonly edits: Message['edits'];
     embeds: Message['embeds'];
     flags: Message['flags'];
     mentions: Message['mentions'];
@@ -3235,6 +3235,7 @@ declare module 'discord.js' {
     disableMentions?: 'none' | 'all' | 'everyone';
     allowedMentions?: MessageMentionOptions;
     files?: (FileOptions | BufferResolvable | Stream | MessageAttachment)[];
+    components: Components[];
     code?: string | boolean;
     split?: boolean | SplitOptions;
   }

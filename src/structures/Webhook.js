@@ -166,34 +166,6 @@ class Webhook {
   }
 
   /**
-   * Sends a raw slack message with this webhook.
-   * @param {Object} body The raw body to send
-   * @returns {Promise<boolean>}
-   * @example
-   * // Send a slack message
-   * webhook.sendSlackMessage({
-   *   'username': 'Wumpus',
-   *   'attachments': [{
-   *     'pretext': 'this looks pretty cool',
-   *     'color': '#F0F',
-   *     'footer_icon': 'http://snek.s3.amazonaws.com/topSnek.png',
-   *     'footer': 'Powered by sneks',
-   *     'ts': Date.now() / 1000
-   *   }]
-   * }).catch(console.error);
-   */
-  sendSlackMessage(body) {
-    return this.client.api
-      .webhooks(this.id, this.token)
-      .slack.post({
-        query: { wait: true },
-        auth: false,
-        data: body,
-      })
-      .then(data => data.toString() === 'ok');
-  }
-
-  /**
    * Edits the webhook.
    * @param {Object} options Options
    * @param {string} [options.name=this.name] New name for this webhook
@@ -264,7 +236,7 @@ class Webhook {
   }
 
   static applyToClass(structure) {
-    for (const prop of ['send', 'sendSlackMessage', 'edit', 'delete', 'createdTimestamp', 'createdAt', 'url']) {
+    for (const prop of ['send', 'edit', 'delete', 'createdTimestamp', 'createdAt', 'url']) {
       Object.defineProperty(structure.prototype, prop, Object.getOwnPropertyDescriptor(Webhook.prototype, prop));
     }
   }

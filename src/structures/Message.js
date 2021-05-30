@@ -145,6 +145,8 @@ class Message extends Base {
       }
     }
 
+    this.components = data.components;
+
     /**
      * The timestamp the message was sent at
      * @type {number}
@@ -197,13 +199,6 @@ class Message extends Base {
         }
       : null;
 
-    /**
-     * The previous versions of the message, sorted with the most recent first
-     * @type {Message[]}
-     * @private
-     */
-    this._edits = [];
-
     if (this.member && data.member) {
       this.member._patch(data.member);
     } else if (data.member && this.guild && this.author) {
@@ -254,11 +249,6 @@ class Message extends Base {
    */
   patch(data) {
     const clone = this._clone();
-    const { messageEditHistoryMaxSize } = this.client.options;
-    if (messageEditHistoryMaxSize !== 0) {
-      const editsLimit = messageEditHistoryMaxSize === -1 ? Infinity : messageEditHistoryMaxSize;
-      if (this._edits.unshift(clone) > editsLimit) this._edits.pop();
-    }
 
     if ('edited_timestamp' in data) this.editedTimestamp = new Date(data.edited_timestamp).getTime();
     if ('content' in data) this.content = data.content;
@@ -336,17 +326,6 @@ class Message extends Base {
   }
 
   /**
-   * The message contents with all mentions replaced by the equivalent text.
-   * If mentions cannot be resolved to a name, the relevant mention in the message content will not be converted.
-   * @type {string}
-   * @readonly
-   */
-  get cleanContent() {
-    // eslint-disable-next-line eqeqeq
-    return this.content != null ? Util.cleanContent(this.content, this) : null;
-  }
-
-  /**
    * Creates a reaction collector.
    * @param {CollectorFilter} filter The filter to apply
    * @param {ReactionCollectorOptions} [options={}] Options to send to the collector
@@ -392,18 +371,6 @@ class Message extends Base {
   }
 
   /**
-   * An array of cached versions of the message, including the current version
-   * Sorted from latest (first) to oldest (last)
-   * @type {Message[]}
-   * @readonly
-   */
-  get edits() {
-    const copy = this._edits.slice();
-    copy.unshift(this);
-    return copy;
-  }
-
-  /**
    * Whether the message is editable by the client user
    * @type {boolean}
    * @readonly
@@ -422,35 +389,6 @@ class Message extends Base {
       !this.deleted &&
       (this.author.id === this.client.user.id ||
         (this.guild && this.channel.permissionsFor(this.client.user).has(Permissions.FLAGS.MANAGE_MESSAGES, false)))
-    );
-  }
-
-  /**
-   * Whether the message is pinnable by the client user
-   * @type {boolean}
-   * @readonly
-   */
-  get pinnable() {
-    return (
-      this.type === 'DEFAULT' &&
-      (!this.guild || this.channel.permissionsFor(this.client.user).has(Permissions.FLAGS.MANAGE_MESSAGES, false))
-    );
-  }
-
-  /**
-   * Whether the message is crosspostable by the client user
-   * @type {boolean}
-   * @readonly
-   */
-  get crosspostable() {
-    return (
-      this.channel.type === 'news' &&
-      !this.flags.has(MessageFlags.FLAGS.CROSSPOSTED) &&
-      this.type === 'DEFAULT' &&
-      this.channel.viewable &&
-      this.channel.permissionsFor(this.client.user).has(Permissions.FLAGS.SEND_MESSAGES) &&
-      (this.author.id === this.client.user.id ||
-        this.channel.permissionsFor(this.client.user).has(Permissions.FLAGS.MANAGE_MESSAGES))
     );
   }
 
@@ -702,7 +640,6 @@ class Message extends Base {
       author: 'authorID',
       application: 'applicationID',
       guild: 'guildID',
-      cleanContent: true,
       member: false,
       reactions: false,
     });

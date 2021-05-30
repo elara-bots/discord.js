@@ -56,17 +56,6 @@ class BaseGuildVoiceChannel extends GuildChannel {
   }
 
   /**
-   * Whether the channel is joinable by the client user
-   * @type {boolean}
-   * @readonly
-   */
-  get joinable() {
-    if (!this.viewable) return false;
-    if (!this.permissionsFor(this.client.user).has(Permissions.FLAGS.CONNECT, false)) return false;
-    return true;
-  }
-
-  /**
    * Attempts to join this voice-based channel.
    * @returns {Promise<VoiceConnection>}
    * @example

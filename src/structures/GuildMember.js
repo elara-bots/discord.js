@@ -35,18 +35,6 @@ class GuildMember extends Base {
     this.joinedTimestamp = null;
 
     /**
-     * The ID of the last message sent by the member in their guild, if one was sent
-     * @type {?Snowflake}
-     */
-    this.lastMessageID = null;
-
-    /**
-     * The ID of the channel for the last message sent by the member in their guild, if one was sent
-     * @type {?Snowflake}
-     */
-    this.lastMessageChannelID = null;
-
-    /**
      * The timestamp of when the member used their Nitro boost on the guild, if it was used
      * @type {?number}
      */
@@ -100,31 +88,12 @@ class GuildMember extends Base {
   }
 
   /**
-   * Whether this GuildMember is a partial
-   * @type {boolean}
-   * @readonly
-   */
-  get partial() {
-    return !this.joinedTimestamp;
-  }
-
-  /**
    * A manager for the roles belonging to this member
    * @type {GuildMemberRoleManager}
    * @readonly
    */
   get roles() {
     return new GuildMemberRoleManager(this);
-  }
-
-  /**
-   * The Message object of the last message sent by the member in their guild, if one was sent
-   * @type {?Message}
-   * @readonly
-   */
-  get lastMessage() {
-    const channel = this.guild.channels.cache.get(this.lastMessageChannelID);
-    return (channel && channel.messages.cache.get(this.lastMessageID)) || null;
   }
 
   /**
@@ -238,24 +207,6 @@ class GuildMember extends Base {
   }
 
   /**
-   * Whether this member is kickable by the client user
-   * @type {boolean}
-   * @readonly
-   */
-  get kickable() {
-    return this.manageable && this.guild.me.permissions.has(Permissions.FLAGS.KICK_MEMBERS);
-  }
-
-  /**
-   * Whether this member is bannable by the client user
-   * @type {boolean}
-   * @readonly
-   */
-  get bannable() {
-    return this.manageable && this.guild.me.permissions.has(Permissions.FLAGS.BAN_MEMBERS);
-  }
-
-  /**
    * Returns `channel.permissionsFor(guildMember)`. Returns permissions for a member in a guild channel,
    * taking into account roles and permission overwrites.
    * @param {ChannelResolvable} channel The guild channel to use as context
@@ -265,20 +216,6 @@ class GuildMember extends Base {
     channel = this.guild.channels.resolve(channel);
     if (!channel) throw new Error('GUILD_CHANNEL_RESOLVE');
     return channel.memberPermissions(this);
-  }
-
-  /**
-   * Checks if any of this member's roles have a permission.
-   * @param {PermissionResolvable} permission Permission(s) to check for
-   * @param {Object} [options] Options
-   * @param {boolean} [options.checkAdmin=true] Whether to allow the administrator permission to override
-   * @param {boolean} [options.checkOwner=true] Whether to allow being the guild's owner to override
-   * @returns {boolean}
-   */
-  hasPermission(permission, { checkAdmin = true, checkOwner = true } = {}) {
-    if (checkOwner && this.user.id === this.guild.ownerID) return true;
-    const permissions = new Permissions(this.roles.cache.map(role => role.permissions));
-    return permissions.has(permission, checkAdmin);
   }
   
   /**
@@ -345,16 +282,6 @@ class GuildMember extends Base {
     data.user = this.user;
     clone._patch(data);
     return clone;
-  }
-
-  /**
-   * Sets the nickname for this member.
-   * @param {string} nick The nickname for the guild member
-   * @param {string} [reason] Reason for setting the nickname
-   * @returns {Promise<GuildMember>}
-   */
-  setNickname(nick, reason) {
-    return this.edit({ nick }, reason);
   }
 
   /**
@@ -428,8 +355,6 @@ class GuildMember extends Base {
       user: 'userID',
       displayName: true,
       speaking: false,
-      lastMessage: false,
-      lastMessageID: false,
       roles: true,
     });
   }
