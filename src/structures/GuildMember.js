@@ -81,6 +81,15 @@ class GuildMember extends Base {
     if ('joined_at' in data) this.joinedTimestamp = new Date(data.joined_at).getTime();
     if ('premium_since' in data) this.premiumSinceTimestamp = new Date(data.premium_since).getTime();
     if ('roles' in data) this._roles = data.roles;
+    if ('avatar' in data) {
+      /**
+       * The ID of the member's guild avatar
+       * @type {?string}
+       */
+      this.avatar = data.avatar;
+    } else if (typeof this.avatar !== 'string') {
+      this.avatar = null;
+    }
     this.pending = data.pending ?? false;
   }
 
@@ -270,6 +279,26 @@ class GuildMember extends Base {
     if (checkOwner && this.user.id === this.guild.ownerID) return true;
     const permissions = new Permissions(this.roles.cache.map(role => role.permissions));
     return permissions.has(permission, checkAdmin);
+  }
+  
+  /**
+   * A link to the member's guild avatar.
+   * @param {ImageURLOptions} [options={}] Options for the Image URL
+   * @returns {?string}
+   */
+  avatarURL({ format, size, dynamic } = {}) {
+    if (!this.avatar) return null;
+    return this.client.rest.cdn.GuildAvatar(this.guild.id, this.id, this.avatar, format, size, dynamic);
+  }
+
+  /**
+   * A link to the member's guild avatar if they have one.
+   * Otherwise a link to their user display avatar will be returned.
+   * @param {ImageURLOptions} [options={}] Options for the Image URL
+   * @returns {string}
+   */
+  displayAvatarURL(options) {
+    return this.avatarURL(options) || this.user.displayAvatarURL(options);
   }
 
   /**
