@@ -29,6 +29,32 @@
 - [Contributing](#contributing)
 - [Help](#help)
 
+# NOTE
+This is a modified version of the stable branch to support new features until version 13 is released and stable. 
+I've added and removed certain stuff from it. As it's either not really used in my projects or just a simple getter that can easily be added on the dev's side. 
+
+### **Removed**
+`messageEditHistoryMaxSize` and message edit history 
+`lastMessageID`, `lastPinTimestamp`, `lastMessageChannelID` `lastMessage`, `lastPinTimestamp` fields
+`GuildEmoji#deletable` and `GuildEmoji#setName`
+`GuildMember#partial`, `GuildMember#kickable`, `GuildMember#bannable`, `GuildMember#setNickname`, `GuildMember#hasPermission` (it's been deprecated for ages now)
+
+`Invite#deletable`
+`Message#pinnable`, `Message#crosspostable`
+`Role#setName`, `Role#setHoist`, `Role#setPosition` and `Role#setMentionable`
+`TextChannel#setRateLimitPerUser`, `TextChannel#setNSFW`, `TextChannel#typingIn`, `TextChannel#typingSinceIn`, `TextChannel#typingDurationIn`
+`VoiceChannel#setUserLimit`
+`VoiceState#setMute`, `VoiceState#setDeaf`, `VoiceState#setSelfDeaf` and `VoiceState#setSelfMute`
+`WebhookClient#sendSlackMessage` (who tf uses that)
+
+### **Updated**:
+`MessageEmbed#setTitle` now accepts the url aswell `setTitle(text, url)`
+
+## WARNING
+I'm not responsible for what happens to your application if you decide to use this repo. 
+This will most likely be archived once discord.js version 13 comes out fully and has been stable for awhile.  
+
+
 ## About
 
 discord.js is a powerful [Node.js](https://nodejs.org) module that allows you to easily interact with the
