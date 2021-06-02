@@ -5,6 +5,7 @@ const Base = require('./Base');
 const GuildAuditLogs = require('./GuildAuditLogs');
 const GuildPreview = require('./GuildPreview');
 const GuildTemplate = require('./GuildTemplate');
+const GuildBanManager = require('../managers/GuildBanManager');
 const Integration = require('./Integration');
 const Invite = require('./Invite');
 const VoiceRegion = require('./VoiceRegion');
@@ -61,6 +62,13 @@ class Guild extends Base {
      * @type {RoleManager}
      */
     this.roles = new RoleManager(this);
+
+    
+     /**
+     * A manager of the bans belonging to this guild
+     * @type {GuildBanManager}
+     */
+    this.bans = new GuildBanManager(this);
 
     /**
      * A manager of the presences belonging to this guild
@@ -147,6 +155,7 @@ class Guild extends Base {
     /**
      * The region the guild is located in
      * @type {string}
+     * @deprecated
      */
     this.region = data.region;
 
@@ -212,13 +221,6 @@ class Guild extends Base {
     this.systemChannelID = data.system_channel_id;
 
     /**
-     * Whether embedded images are enabled on this guild
-     * @type {boolean}
-     * @deprecated
-     */
-    this.embedEnabled = data.embed_enabled;
-
-    /**
      * The type of premium tier:
      * * 0: NONE
      * * 1: TIER_1
@@ -255,15 +257,6 @@ class Guild extends Base {
        * @type {?string}
        */
       this.widgetChannelID = data.widget_channel_id;
-    }
-
-    if (typeof data.embed_channel_id !== 'undefined') {
-      /**
-       * The embed channel ID, if enabled
-       * @type {?string}
-       * @deprecated
-       */
-      this.embedChannelID = data.embed_channel_id;
     }
 
     /**
@@ -486,24 +479,6 @@ class Guild extends Base {
   }
 
   /**
-   * If this guild is partnered
-   * @type {boolean}
-   * @readonly
-   */
-  get partnered() {
-    return this.features.includes('PARTNERED');
-  }
-
-  /**
-   * If this guild is verified
-   * @type {boolean}
-   * @readonly
-   */
-  get verified() {
-    return this.features.includes('VERIFIED');
-  }
-
-  /**
    * The URL to this guild's icon.
    * @param {ImageURLOptions} [options={}] Options for the Image URL
    * @returns {?string}
@@ -587,16 +562,6 @@ class Guild extends Base {
   }
 
   /**
-   * Embed channel for this guild
-   * @type {?TextChannel}
-   * @readonly
-   * @deprecated
-   */
-  get embedChannel() {
-    return this.client.channels.cache.get(this.embedChannelID) || null;
-  }
-
-  /**
    * Rules channel for this guild
    * @type {?TextChannel}
    * @readonly
@@ -654,13 +619,7 @@ class Guild extends Base {
    * @returns {Promise<Guild>}
    */
   fetch() {
-    return this.client.api
-      .guilds(this.id)
-      .get({ query: { with_counts: true } })
-      .then(data => {
-        this._patch(data);
-        return this;
-      });
+    return this.client.api.guilds(this.id).get({ query: { with_counts: true } }).then(data => { this._patch(data); return this; });
   }
 
   /**
@@ -747,39 +706,6 @@ class Guild extends Base {
       .then(templates =>
         templates.reduce((col, data) => col.set(data.code, new GuildTemplate(this.client, data)), new Collection()),
       );
-  }
-
-  /**
-   * The data for creating an integration.
-   * @typedef {Object} IntegrationData
-   * @property {string} id The integration id
-   * @property {string} type The integration type
-   */
-
-  /**
-   * Creates an integration by attaching an integration object
-   * @param {IntegrationData} data The data for the integration
-   * @param {string} reason Reason for creating the integration
-   * @returns {Promise<Guild>}
-   */
-  createIntegration(data, reason) {
-    return this.client.api
-      .guilds(this.id)
-      .integrations.post({ data, reason })
-      .then(() => this);
-  }
-
-  /**
-   * Creates a template for the guild.
-   * @param {string} name The name for the template
-   * @param {string} [description] The description for the template
-   * @returns {Promise<GuildTemplate>}
-   */
-  createTemplate(name, description) {
-    return this.client.api
-      .guilds(this.id)
-      .templates.post({ data: { name, description } })
-      .then(data => new GuildTemplate(this.client, data));
   }
 
   /**
@@ -916,21 +842,6 @@ class Guild extends Base {
    * @property {boolean} enabled Whether the widget is enabled
    * @property {?GuildChannelResolvable} channel The widget channel
    */
-
-  /**
-   * Fetches the guild embed.
-   * @returns {Promise<GuildWidget>}
-   * @deprecated
-   * @example
-   * // Fetches the guild embed
-   * guild.fetchEmbed()
-   *   .then(embed => console.log(`The embed is ${embed.enabled ? 'enabled' : 'disabled'}`))
-   *   .catch(console.error);
-   */
-  fetchEmbed() {
-    return this.fetchWidget();
-  }
-
   /**
    * Fetches the guild widget.
    * @returns {Promise<GuildWidget>}
@@ -968,9 +879,7 @@ class Guild extends Base {
     if (options.before && options.before instanceof GuildAuditLogs.Entry) options.before = options.before.id;
     if (typeof options.type === 'string') options.type = GuildAuditLogs.Actions[options.type];
 
-    return this.client.api
-      .guilds(this.id)
-      ['audit-logs'].get({
+    return this.client.api.guilds(this.id)['audit-logs'].get({
         query: {
           before: options.before,
           limit: options.limit,
@@ -979,40 +888,6 @@ class Guild extends Base {
         },
       })
       .then(data => GuildAuditLogs.build(this, data));
-  }
-
-  /**
-   * Adds a user to the guild using OAuth2. Requires the `CREATE_INSTANT_INVITE` permission.
-   * @param {UserResolvable} user User to add to the guild
-   * @param {Object} options Options for the addition
-   * @param {string} options.accessToken An OAuth2 access token for the user with the `guilds.join` scope granted to the
-   * bot's application
-   * @param {string} [options.nick] Nickname to give the member (requires `MANAGE_NICKNAMES`)
-   * @param {Collection<Snowflake, Role>|RoleResolvable[]} [options.roles] Roles to add to the member
-   * (requires `MANAGE_ROLES`)
-   * @param {boolean} [options.mute] Whether the member should be muted (requires `MUTE_MEMBERS`)
-   * @param {boolean} [options.deaf] Whether the member should be deafened (requires `DEAFEN_MEMBERS`)
-   * @returns {Promise<GuildMember>}
-   */
-  async addMember(user, options) {
-    user = this.client.users.resolveID(user);
-    if (!user) throw new TypeError('INVALID_TYPE', 'user', 'UserResolvable');
-    if (this.members.cache.has(user)) return this.members.cache.get(user);
-    options.access_token = options.accessToken;
-    if (options.roles) {
-      const roles = [];
-      for (let role of options.roles instanceof Collection ? options.roles.values() : options.roles) {
-        role = this.roles.resolve(role);
-        if (!role) {
-          throw new TypeError('INVALID_TYPE', 'options.roles', 'Array or Collection of Roles or Snowflakes', true);
-        }
-        roles.push(role.id);
-      }
-      options.roles = roles;
-    }
-    const data = await this.client.api.guilds(this.id).members(user).put({ data: options });
-    // Data is an empty buffer if the member is already part of the guild.
-    return data instanceof (browser ? ArrayBuffer : Buffer) ? this.members.fetch(user) : this.members.add(data);
   }
 
   /**
@@ -1095,9 +970,7 @@ class Guild extends Base {
       _data.public_updates_channel_id = this.client.channels.resolveID(data.publicUpdatesChannel);
     }
     if (data.preferredLocale) _data.preferred_locale = data.preferredLocale;
-    return this.client.api
-      .guilds(this.id)
-      .patch({ data: _data, reason })
+    return this.client.api.guilds(this.id).patch({ data: _data, reason })
       .then(newData => this.client.actions.GuildUpdate.handle(newData).updated);
   }
 
@@ -1146,21 +1019,6 @@ class Guild extends Base {
    */
   setName(name, reason) {
     return this.edit({ name }, reason);
-  }
-
-  /**
-   * Edits the region of the guild.
-   * @param {string} region The new region of the guild
-   * @param {string} [reason] Reason for changing the guild's region
-   * @returns {Promise<Guild>}
-   * @example
-   * // Edit the guild region
-   * guild.setRegion('london')
-   *  .then(updated => console.log(`Updated guild region to ${updated.region}`))
-   *  .catch(console.error);
-   */
-  setRegion(region, reason) {
-    return this.edit({ region }, reason);
   }
 
   /**
@@ -1236,21 +1094,6 @@ class Guild extends Base {
    */
   async setIcon(icon, reason) {
     return this.edit({ icon: await DataResolver.resolveImage(icon), reason });
-  }
-
-  /**
-   * Sets a new owner of the guild.
-   * @param {GuildMemberResolvable} owner The new owner of the guild
-   * @param {string} [reason] Reason for setting the new owner
-   * @returns {Promise<Guild>}
-   * @example
-   * // Edit the guild owner
-   * guild.setOwner(guild.members.cache.first())
-   *  .then(updated => console.log(`Updated the guild owner to ${updated.owner.displayName}`))
-   *  .catch(console.error);
-   */
-  setOwner(owner, reason) {
-    return this.edit({ owner }, reason);
   }
 
   /**
@@ -1389,7 +1232,7 @@ class Guild extends Base {
    * @returns {Promise<Guild>}
    * @example
    * guild.setRolePositions([{ role: roleID, position: updatedRoleIndex }])
-   *  .then(guild => console.log(`Role permissions updated for ${guild}`))
+   *  .then(guild => console.log(`Role positions updated for ${guild}`))
    *  .catch(console.error);
    */
   setRolePositions(rolePositions) {
@@ -1412,17 +1255,6 @@ class Guild extends Base {
             roles: rolePositions,
           }).guild,
       );
-  }
-
-  /**
-   * Edits the guild's embed.
-   * @param {GuildWidgetData} embed The embed for the guild
-   * @param {string} [reason] Reason for changing the guild's embed
-   * @returns {Promise<Guild>}
-   * @deprecated
-   */
-  setEmbed(embed, reason) {
-    return this.setWidget(embed, reason);
   }
 
   /**
@@ -1455,11 +1287,7 @@ class Guild extends Base {
    */
   leave() {
     if (this.ownerID === this.client.user.id) return Promise.reject(new Error('GUILD_OWNED'));
-    return this.client.api
-      .users('@me')
-      .guilds(this.id)
-      .delete()
-      .then(() => this.client.actions.GuildDelete.handle({ id: this.id }).guild);
+    return this.client.api.users('@me').guilds(this.id).delete().then(() => this.client.actions.GuildDelete.handle({ id: this.id }).guild);
   }
 
   /**
