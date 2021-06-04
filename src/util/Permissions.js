@@ -79,6 +79,11 @@ class Permissions extends BitField {
  * * `MANAGE_ROLES`
  * * `MANAGE_WEBHOOKS`
  * * `MANAGE_EMOJIS`
+ * * `USE_SLASH_COMMANDS`
+ * * `REQUEST_TO_SPEAK`
+ * * `MANAGE_THREADS`
+ * * `USE_PUBLIC_THREADS`
+ * * `USE_PRIVATE_THREADS`
  * @type {Object}
  * @see {@link https://discord.com/developers/docs/topics/permissions}
  */
@@ -114,6 +119,11 @@ Permissions.FLAGS = {
   MANAGE_ROLES: 1 << 28,
   MANAGE_WEBHOOKS: 1 << 29,
   MANAGE_EMOJIS: 1 << 30,
+  USE_SLASH_COMMANDS: 1 << 31,
+  REQUEST_TO_SPEAK: 1 << 32,
+  MANAGE_THREADS: 1 << 34,
+  USE_PUBLIC_THREADS: 1 << 35,
+  USE_PRIVATE_THREADS: 1 << 36
 };
 
 /**
