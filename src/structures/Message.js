@@ -531,7 +531,8 @@ class Message extends Base {
     } else {
       return new Promise(resolve => {
         this.client.setTimeout(() => {
-          resolve(this.delete({ reason }));
+          if(!this.deleted) return resolve(this.delete({ reason }));
+          return resolve(null);
         }, timeout);
       });
     }
