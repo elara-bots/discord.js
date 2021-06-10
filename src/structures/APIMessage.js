@@ -156,13 +156,8 @@ class APIMessage {
     }
 
     const embedLikes = [];
-    if (this.isWebhook) {
-      if (this.options.embeds) {
-        embedLikes.push(...this.options.embeds);
-      }
-    } else if (this.options.embed) {
-      embedLikes.push(this.options.embed);
-    }
+    if(this.options.embed) embedLikes.push(this.options.embed);
+    else if(this.options.embeds) embedLikes.push(...this.options.embeds);
     const embeds = embedLikes.map(e => new MessageEmbed(e).toJSON());
 
     let username;
@@ -217,7 +212,6 @@ class APIMessage {
       content,
       tts,
       nonce,
-      embed: this.options.embed === null ? null : embeds[0],
       embeds,
       username,
       components,
