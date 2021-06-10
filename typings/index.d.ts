@@ -2882,6 +2882,7 @@ declare module 'discord.js' {
     nonce?: string;
     content?: StringResolvable;
     embed?: MessageEmbed | MessageEmbedOptions;
+    embeds?: MessageEmbed[] | MessageEmbedOptions[];
     disableMentions?: 'none' | 'all' | 'everyone';
     allowedMentions?: MessageMentionOptions;
     components: Components[];
