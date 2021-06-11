@@ -212,6 +212,7 @@ class APIMessage {
       content,
       tts,
       nonce,
+      embed: this.options.embed === null ? null : embeds[0],
       embeds: this.options.embeds ? embeds : undefined,
       username,
       components,
