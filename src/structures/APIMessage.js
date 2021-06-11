@@ -212,7 +212,7 @@ class APIMessage {
       content,
       tts,
       nonce,
-      embeds,
+      embeds: this.options.embeds ? embeds : undefined,
       username,
       components,
       avatar_url: avatarURL,
