@@ -504,6 +504,7 @@ class GuildChannel extends Channel {
         reason,
       })
       .then(invite => new Invite(this.client, invite));
+  }
 
   /**
    * Fetches a collection of invites to this guild channel.
