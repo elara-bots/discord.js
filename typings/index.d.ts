@@ -979,8 +979,10 @@ declare module 'discord.js' {
     public maxUses: number | null;
     public memberCount: number;
     public presenceCount: number;
+    public targetApplication: IntegrationApplication | null;
     public targetUser: User | null;
-    public targetUserType: TargetUser | null;
+    public targetUserType: InviteTargetType | null;
+    public targetType: InviteTargetType | null;
     public temporary: boolean | null;
     public readonly url: string;
     public uses: number | null;
