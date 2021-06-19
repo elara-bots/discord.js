@@ -1,7 +1,7 @@
 'use strict';
 
 const Base = require('./Base');
-const { StickerFormatTypes } = require('../util/Constants');
+const { StickerFormatTypes, StickerTypes } = require('../util/Constants');
 const SnowflakeUtil = require('../util/Snowflake');
 
 /**
@@ -20,6 +20,12 @@ class Sticker extends Base {
      * @type {Snowflake}
      */
     this.id = sticker.id;
+     
+    /**
+     * The type of the sticker
+     * @type {StickerType}
+     */
+    this.type = StickerTypes[sticker.type];
 
     /**
      * The ID of the sticker's image
