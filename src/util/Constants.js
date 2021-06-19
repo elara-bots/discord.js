@@ -145,6 +145,8 @@ exports.Endpoints = {
         makeImageUrl(`${root}/app-icons/${clientID}/${hash}`, { size, format }),
       AppAsset: (clientID, hash, { format = 'webp', size } = {}) =>
         makeImageUrl(`${root}/app-assets/${clientID}/${hash}`, { size, format }),
+      StickerPackBanner: (bannerID, format = 'webp', size) =>
+        makeImageUrl(`${root}/app-assets/710982414301790216/store/${bannerID}`, { size, format }),
       GDMIcon: (channelID, hash, format = 'webp', size) =>
         makeImageUrl(`${root}/channel-icons/${channelID}/${hash}`, { size, format }),
       Splash: (guildID, hash, format = 'webp', size) =>
@@ -437,6 +439,14 @@ exports.MessageTypes = [
  * @typedef {string} ActivityType
  */
 exports.ActivityTypes = ['PLAYING', 'STREAMING', 'LISTENING', 'WATCHING', 'CUSTOM_STATUS', 'COMPETING'];
+
+/**
+ * The value set for a sticker's type:
+ * * STANDARD
+ * * GUILD
+ * @typedef {string} StickerFormatType
+ */
+exports.StickerTypes = [ null, 'STANDARD', 'GUILD' ];
 
 /**
  * The value set for a sticker's type:
