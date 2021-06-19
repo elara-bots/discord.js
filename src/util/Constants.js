@@ -455,7 +455,7 @@ exports.StickerTypes = [ null, 'STANDARD', 'GUILD' ];
  * * LOTTIE
  * @typedef {string} StickerFormatTypes
  */
-exports.StickerFormatTypes = [ 'PNG', 'APNG', 'LOTTIE' ];
+exports.StickerFormatTypes = [ null, 'PNG', 'APNG', 'LOTTIE' ];
 
 exports.ChannelTypes = {
   TEXT: 0,
