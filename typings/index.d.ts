@@ -15,6 +15,17 @@ declare enum InviteTargetType {
   EMBEDDED_APPLICATION = 2,
 }
 
+declare enum StickerFormatTypes {
+  PNG = 1,
+  APNG = 2,
+  LOTTIE = 3,
+}
+
+declare enum StickerTypes {
+  STANDARD = 1,
+  GUILD = 2,
+}
+
 declare module 'discord.js' {
   import BaseCollection from '@discordjs/collection';
   import { ChildProcess } from 'child_process';
@@ -235,6 +246,8 @@ declare module 'discord.js' {
     public fetchInvite(invite: InviteResolvable): Promise<Invite>;
     public fetchGuildTemplate(template: GuildTemplateResolvable): Promise<GuildTemplate>;
     public fetchVoiceRegions(): Promise<Collection<string, VoiceRegion>>;
+    public fetchSticker(id: Snowflake): Promise<Sticker>;
+    public fetchNitroStickerPacks(): Promise<Collection<Snowflake, StickerPack>>;
     public fetchWebhook(id: Snowflake, token?: string): Promise<Webhook>;
     public generateInvite(options?: InviteGenerationOptions | PermissionResolvable): Promise<string>;
     public login(token?: string): Promise<string>;
@@ -369,6 +382,7 @@ declare module 'discord.js' {
         Icon: (userID: string | number, hash: string, format: 'default' | AllowedImageFormat, size: number) => string;
         AppIcon: (userID: string | number, hash: string, format: AllowedImageFormat, size: number) => string;
         AppAsset: (userID: string | number, hash: string, format: AllowedImageFormat, size: number) => string;
+        StickerPackBanner: (bannerID: Snowflake, format: AllowedImageFormat, size: number) => string;
         GDMIcon: (userID: string | number, hash: string, format: AllowedImageFormat, size: number) => string;
         Splash: (guildID: string | number, hash: string, format: AllowedImageFormat, size: number) => string;
         DiscoverySplash: (guildID: string | number, hash: string, format: AllowedImageFormat, size: number) => string;
@@ -539,6 +553,8 @@ declare module 'discord.js' {
     ActivityTypes: ActivityType[];
     ExplicitContentFilterLevels: ExplicitContentFilterLevel[];
     DefaultMessageNotifications: DefaultMessageNotifications[];
+    StickerTypes: typeof StickerTypes;
+    StickerFormatTypes: typeof StickerFormatTypes;
     VerificationLevels: VerificationLevel[];
     MembershipStates: 'INVITED' | 'ACCEPTED';
   };
@@ -1061,18 +1077,40 @@ declare module 'discord.js' {
     public toString(): string;
     public unpin(options?: { reason?: string }): Promise<Message>;
   }
+
   export class Sticker extends Base {
-    constructor(client: Client, data: object);
-    public asset: string;
+    constructor(client: Client, data: unknown);
     public readonly createdTimestamp: number;
     public readonly createdAt: Date;
+    public available: ?boolean;
     public description: string;
-    public format: StickerFormatTypes;
+    public format: StickerFormatType;
+    public readonly guild: ?Guild;
+    public guildID: ?Snowflake;
     public id: Snowflake;
     public name: string;
-    public packID: Snowflake;
+    public packID: ?Snowflake;
+    public sortValue: ?number;
     public tags: string[];
+    public type: StickerType;
+    public user: ?User;
     public readonly url: string;
+    public fetchPack(): Promise<?StickerPack>;
+  }
+
+  export class StickerPack extends Base {
+    constructor(client: Client, data: unknown);
+    public readonly createdTimestamp: number;
+    public readonly createdAt: Date;
+    public bannerID: Snowflake;
+    public readonly coverSticker: Sticker;
+    public coverStickerID: Snowflake;
+    public description: string;
+    public id: Snowflake;
+    public name: string;
+    public skuID: Snowflake;
+    public stickers: Collection<Snowflake, Sticker>;
+    public bannerURL(options?: StaticImageURLOptions): string;
   }
 
   export class MessageAttachment {
@@ -3207,6 +3245,10 @@ declare module 'discord.js' {
   type SystemChannelFlagsString = 'WELCOME_MESSAGE_DISABLED' | 'BOOST_MESSAGE_DISABLED';
 
   type SystemChannelFlagsResolvable = BitFieldResolvable<SystemChannelFlagsString>;
+
+  type StickerFormatType = keyof typeof StickerFormatTypes;
+
+  type StickerType = keyof typeof StickerTypes;
 
   type TargetUser = number;
 
