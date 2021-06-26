@@ -376,10 +376,10 @@ declare module 'discord.js' {
         Asset: (name: string) => string;
         DefaultAvatar: (id: string | number) => string;
         Emoji: (emojiID: string, format: 'png' | 'gif') => string;
-        Avatar: (userID: string | number, hash: string, format: 'default' | AllowedImageFormat, size: number) => string;
-        GuildAvatar: (guildID: string | number, memberID: string | number, hash: string, format: 'default' | AllowedImageFormat, size: number) => string;
+        Avatar: (userID: string | number, hash: string, format: 'default' | AllowedImageFormat, size: number, dynamic: boolean) => string;
+        GuildAvatar: (guildID: string | number, memberID: string | number, hash: string, format: 'default' | AllowedImageFormat, size: number, dynamic: boolean) => string;
         Banner: (id: string | number, hash: string, format: AllowedImageFormat, size: number, dynamic: boolean) => string;
-        Icon: (userID: string | number, hash: string, format: 'default' | AllowedImageFormat, size: number) => string;
+        Icon: (userID: string | number, hash: string, format: 'default' | AllowedImageFormat, size: number, dynamic: boolean) => string;
         AppIcon: (userID: string | number, hash: string, format: AllowedImageFormat, size: number) => string;
         AppAsset: (userID: string | number, hash: string, format: AllowedImageFormat, size: number) => string;
         StickerPackBanner: (bannerID: Snowflake, format: AllowedImageFormat, size: number) => string;
