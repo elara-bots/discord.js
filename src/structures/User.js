@@ -249,7 +249,8 @@ class User extends Base {
       this.id === user.id &&
       this.username === user.username &&
       this.discriminator === user.discriminator &&
-      this.avatar === user.avatar;
+      this.avatar === user.avatar && 
+      this.banner === user.banner;
 
     return equal;
   }
@@ -295,8 +296,9 @@ class User extends Base {
       },
       ...props,
     );
-    json.avatarURL = this.avatarURL();
-    json.displayAvatarURL = this.displayAvatarURL();
+    json.avatarURL = this.avatarURL({ dynamic: true });
+    json.displayAvatarURL = this.displayAvatarURL({ dynamic: true });
+    json.bannerURL = this.bannerURL({ dynamic: true });
     return json;
   }
 
