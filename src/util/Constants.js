@@ -65,6 +65,8 @@ exports.Endpoints = {
         makeImageUrl(`${root}/app-icons/${clientID}/${hash}`, { size, format }),
       AppAsset: (clientID, hash, { format = 'webp', size } = {}) =>
         makeImageUrl(`${root}/app-assets/${clientID}/${hash}`, { size, format }),
+      StickerPackBanner: (bannerID, format = 'webp', size) =>
+        makeImageUrl(`${root}/app-assets/710982414301790216/store/${bannerID}`, { size, format }),
       GDMIcon: (channelID, hash, format = 'webp', size) =>
         makeImageUrl(`${root}/channel-icons/${channelID}/${hash}`, { size, format }),
       Splash: (guildID, hash, format = 'webp', size) =>
@@ -73,6 +75,8 @@ exports.Endpoints = {
         makeImageUrl(`${root}/discovery-splashes/${guildID}/${hash}`, { size, format }),
       TeamIcon: (teamID, hash, { format = 'webp', size } = {}) =>
         makeImageUrl(`${root}/team-icons/${teamID}/${hash}`, { size, format }),
+      Sticker: (stickerID, stickerFormat) =>
+        `${root}/stickers/${stickerID}.${stickerFormat === 'LOTTIE' ? 'json' : 'png'}`,
     };
   },
   invite: (root, code) => `${root}/${code}`,
@@ -184,6 +188,9 @@ exports.Events = {
   STAGE_INSTANCE_CREATE: 'stageInstanceCreate',
   STAGE_INSTANCE_UPDATE: 'stageInstanceUpdate',
   STAGE_INSTANCE_DELETE: 'stageInstanceDelete',
+  GUILD_STICKER_CREATE: 'stickerCreate',
+  GUILD_STICKER_DELETE: 'stickerDelete',
+  GUILD_STICKER_UPDATE: 'stickerUpdate',
 };
 
 exports.ShardEvents = {
@@ -259,6 +266,7 @@ exports.PartialTypes = keyMirror(['USER', 'CHANNEL', 'GUILD_MEMBER', 'MESSAGE', 
  * * STAGE_INSTANCE_CREATE
  * * STAGE_INSTANCE_UPDATE
  * * STAGE_INSTANCE_DELETE
+ * * GUILD_STICKERS_UPDATE
  * @typedef {string} WSEventType
  */
 exports.WSEvents = keyMirror([
@@ -311,6 +319,7 @@ exports.WSEvents = keyMirror([
   'STAGE_INSTANCE_CREATE',
   'STAGE_INSTANCE_UPDATE',
   'STAGE_INSTANCE_DELETE',
+  'GUILD_STICKERS_UPDATE',
 ]);
 
 /**
@@ -771,6 +780,14 @@ exports.WebhookTypes = createEnum([null, 'Incoming', 'Channel Follower']);
 
 /**
  * The value set for a sticker's type:
+ * * STANDARD
+ * * GUILD
+ * @typedef {string} StickerFormatType
+ */
+exports.StickerTypes = createEnum([null, 'STANDARD', 'GUILD']);
+
+/**
+ * The value set for a sticker's format type:
  * * PNG
  * * APNG
  * * LOTTIE
