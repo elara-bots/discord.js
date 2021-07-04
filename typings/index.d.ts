@@ -593,6 +593,7 @@ declare module 'discord.js' {
   }
 
   type AllowedImageFormat = 'webp' | 'png' | 'jpg' | 'jpeg' | 'gif';
+  type AllowedImageSize = 16 | 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 4096;
 
   export const Constants: {
     Package: {
@@ -629,30 +630,37 @@ declare module 'discord.js' {
           size: number,
           dynamic: boolean,
         ) => string;
+        GuildMemberAvatar: (
+          guildId: Snowflake | number,
+          userId: Snowflake | number,
+          hash: string,
+          format: AllowedImageFormat,
+          size: AllowedImageSize,
+        ) => string;
         Banner: (
           id: Snowflake | number,
           hash: string,
           format: AllowedImageFormat,
-          size: number,
+          size: AllowedImageSize,
           dynamic: boolean) => string;
         Icon: (
           userID: Snowflake | number,
           hash: string,
           format: 'default' | AllowedImageFormat,
-          size: number,
+          size: AllowedImageSize,
           dynamic: boolean,
         ) => string;
-        AppIcon: (userID: Snowflake | number, hash: string, format: AllowedImageFormat, size: number) => string;
-        AppAsset: (userID: Snowflake | number, hash: string, format: AllowedImageFormat, size: number) => string;
-        GDMIcon: (userID: Snowflake | number, hash: string, format: AllowedImageFormat, size: number) => string;
-        Splash: (guildID: Snowflake | number, hash: string, format: AllowedImageFormat, size: number) => string;
+        AppIcon: (userID: Snowflake | number, hash: string, format: AllowedImageFormat, size: AllowedImageSize) => string;
+        AppAsset: (userID: Snowflake | number, hash: string, format: AllowedImageFormat, size: AllowedImageSize) => string;
+        GDMIcon: (userID: Snowflake | number, hash: string, format: AllowedImageFormat, size: AllowedImageSize) => string;
+        Splash: (guildID: Snowflake | number, hash: string, format: AllowedImageFormat, size: AllowedImageSize) => string;
         DiscoverySplash: (
           guildID: Snowflake | number,
           hash: string,
           format: AllowedImageFormat,
-          size: number,
+          size: AllowedImageSize,
         ) => string;
-        TeamIcon: (teamID: Snowflake | number, hash: string, format: AllowedImageFormat, size: number) => string;
+        TeamIcon: (teamID: Snowflake | number, hash: string, format: AllowedImageFormat, size: AllowedImageSize) => string;
       };
     };
     WSCodes: {
@@ -1075,6 +1083,7 @@ declare module 'discord.js' {
     constructor(client: Client, data: unknown, guild: Guild);
     public readonly bannable: boolean;
     public deleted: boolean;
+    public avatar: string | null;
     public readonly displayColor: number;
     public readonly displayHexColor: HexColorString;
     public readonly displayName: string;
@@ -1095,6 +1104,8 @@ declare module 'discord.js' {
     public readonly roles: GuildMemberRoleManager;
     public user: User;
     public readonly voice: VoiceState;
+    public avatarURL(options?: ImageURLOptions): string | null;
+    public displayAvatarURL(options?: ImageURLOptions): string;
     public ban(options?: BanOptions): Promise<GuildMember>;
     public fetch(force?: boolean): Promise<GuildMember>;
     public createDM(force?: boolean): Promise<DMChannel>;
