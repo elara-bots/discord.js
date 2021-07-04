@@ -97,7 +97,7 @@ class Options extends null {
   static createDefault() {
     return {
       shardCount: 1,
-      makeCache: this.cacheWithLimits({ MessageManager: 200 }),
+      makeCache: this.cacheEverything(),
       messageCacheLifetime: 0,
       messageSweepInterval: 0,
       invalidRequestWarningInterval: 0,
@@ -106,8 +106,9 @@ class Options extends null {
       restRequestTimeout: 15000,
       restGlobalRateLimit: 0,
       retryLimit: 1,
-      restTimeOffset: 500,
+      restTimeOffset: 20,
       restSweepInterval: 60,
+      failIfNotExists: false,
       presence: {},
       ws: {
         large_threshold: 50,
