@@ -89,6 +89,16 @@ class User extends Base {
       this.avatar = null;
     }
 
+    if ('banner' in data) {
+      /**
+       * The ID of the user's banner
+       * @type {?string}
+       */
+      this.banner = data.banner;
+    } else if (typeof this.banner !== 'string') {
+      this.banner = null;
+    }
+    
     if ('system' in data) {
       /**
        * Whether the user is an Official Discord System user (part of the urgent message system)
@@ -186,6 +196,16 @@ class User extends Base {
   displayAvatarURL(options) {
     return this.avatarURL(options) ?? this.defaultAvatarURL;
   }
+  
+  /**
+   * A link to the user's banner.
+   * @param {ImageURLOptions} [options={}] Options for the Image URL
+   * @returns {?string}
+   */
+  bannerURL({ format, size, dynamic } = {}) {
+    if (!this.banner) return null;
+    return this.client.rest.cdn.Banner(this.id, this.banner, format, size, dynamic);
+  }
 
   /**
    * The Discord "tag" (e.g. `hydrabolt#0001`) for this user
@@ -265,7 +285,7 @@ class User extends Base {
   }
 
   /**
-   * Checks if the user is equal to another. It compares ID, username, discriminator, avatar, and bot flags.
+   * Checks if the user is equal to another. It compares ID, username, discriminator, avatar, banner, and bot flags.
    * It is recommended to compare equality by using `user.id === user2.id` unless you want to compare all properties.
    * @param {User} user User to compare with
    * @returns {boolean}
@@ -276,7 +296,8 @@ class User extends Base {
       this.id === user.id &&
       this.username === user.username &&
       this.discriminator === user.discriminator &&
-      this.avatar === user.avatar;
+      this.avatar === user.avatar &&
+      this.banner === user.banner;
 
     return equal;
   }
@@ -326,6 +347,7 @@ class User extends Base {
     );
     json.avatarURL = this.avatarURL();
     json.displayAvatarURL = this.displayAvatarURL();
+    json.bannerURL = this.bannerURL();
     return json;
   }
 
