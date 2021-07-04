@@ -14,6 +14,7 @@ const GuildBanManager = require('../managers/GuildBanManager');
 const GuildChannelManager = require('../managers/GuildChannelManager');
 const GuildEmojiManager = require('../managers/GuildEmojiManager');
 const GuildMemberManager = require('../managers/GuildMemberManager');
+const GuildStickerManager = require('../managers/GuildStickerManager');
 const PresenceManager = require('../managers/PresenceManager');
 const RoleManager = require('../managers/RoleManager');
 const StageInstanceManager = require('../managers/StageInstanceManager');
@@ -398,6 +399,21 @@ class Guild extends AnonymousGuild {
         emojis: data.emojis,
       });
     }
+    
+    if (!this.stickers) {
+      /**
+       * A manager of the stickers belonging to this guild
+       * @type {GuildStickerManager}
+       */
+      this.stickers = new GuildStickerManager(this);
+      if (data.stickers) for (const sticker of data.stickers) this.stickers.add(sticker);
+    } else if (data.stickers) {
+      this.client.actions.GuildStickersUpdate.handle({
+        guild_id: this.id,
+        stickers: data.stickers,
+      });
+    }
+    
   }
 
   /**
