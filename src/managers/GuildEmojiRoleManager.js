@@ -1,13 +1,18 @@
 'use strict';
 
+const DataManager = require('./DataManager');
 const { TypeError } = require('../errors');
+const Role = require('../structures/Role');
 const Collection = require('../util/Collection');
 
 /**
  * Manages API methods for roles belonging to emojis and stores their cache.
+ * @extends {DataManager}
  */
-class GuildEmojiRoleManager {
+class GuildEmojiRoleManager extends DataManager {
   constructor(emoji) {
+    super(emoji.client, Role);
+
     /**
      * The emoji belonging to this manager
      * @type {GuildEmoji}
@@ -18,22 +23,6 @@ class GuildEmojiRoleManager {
      * @type {Guild}
      */
     this.guild = emoji.guild;
-    /**
-     * The client belonging to this manager
-     * @type {Client}
-     * @readonly
-     */
-    Object.defineProperty(this, 'client', { value: emoji.client });
-  }
-
-  /**
-   * The filtered collection of roles of the guild emoji
-   * @type {Collection<Snowflake, Role>}
-   * @private
-   * @readonly
-   */
-  get _roles() {
-    return this.guild.roles.cache.filter(role => this.emoji._roles.includes(role.id));
   }
 
   /**
@@ -42,7 +31,7 @@ class GuildEmojiRoleManager {
    * @readonly
    */
   get cache() {
-    return this._roles;
+    return this.guild.roles.cache.filter(role => this.emoji._roles.includes(role.id));
   }
 
   /**
@@ -62,7 +51,7 @@ class GuildEmojiRoleManager {
       resolvedRoles.push(resolvedRole);
     }
 
-    const newRoles = [...new Set(resolvedRoles.concat(...this._roles.values()))];
+    const newRoles = [...new Set(resolvedRoles.concat(...this.cache.values()))];
     return this.set(newRoles);
   }
 
@@ -83,7 +72,7 @@ class GuildEmojiRoleManager {
       resolvedRoleIDs.push(roleID);
     }
 
-    const newRoles = this._roles.keyArray().filter(id => !resolvedRoleIDs.includes(id));
+    const newRoles = this.cache.keyArray().filter(id => !resolvedRoleIDs.includes(id));
     return this.set(newRoles);
   }
 
@@ -108,7 +97,7 @@ class GuildEmojiRoleManager {
 
   clone() {
     const clone = new this.constructor(this.emoji);
-    clone._patch(this._roles.keyArray().slice());
+    clone._patch(this.cache.keyArray().slice());
     return clone;
   }
 

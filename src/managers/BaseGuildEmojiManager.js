@@ -1,17 +1,17 @@
 'use strict';
 
-const BaseManager = require('./BaseManager');
+const CachedManager = require('./CachedManager');
 const GuildEmoji = require('../structures/GuildEmoji');
 const ReactionEmoji = require('../structures/ReactionEmoji');
 const { parseEmoji } = require('../util/Util');
 
 /**
  * Holds methods to resolve GuildEmojis and stores their cache.
- * @extends {BaseManager}
+ * @extends {CachedManager}
  */
-class BaseGuildEmojiManager extends BaseManager {
+class BaseGuildEmojiManager extends CachedManager {
   constructor(client, iterable) {
-    super(client, iterable, GuildEmoji);
+    super(client, GuildEmoji, iterable);
   }
 
   /**
@@ -67,7 +67,7 @@ class BaseGuildEmojiManager extends BaseManager {
     if (emoji instanceof ReactionEmoji) return emoji.identifier;
     if (typeof emoji === 'string') {
       const res = parseEmoji(emoji);
-      if (res && res.name.length) {
+      if (res?.name.length) {
         emoji = `${res.animated ? 'a:' : ''}${res.name}${res.id ? `:${res.id}` : ''}`;
       }
       if (!emoji.includes('%')) return encodeURIComponent(emoji);

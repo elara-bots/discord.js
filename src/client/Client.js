@@ -15,10 +15,12 @@ const GuildTemplate = require('../structures/GuildTemplate');
 const Invite = require('../structures/Invite');
 const VoiceRegion = require('../structures/VoiceRegion');
 const Webhook = require('../structures/Webhook');
+const Widget = require('../structures/Widget');
 const Collection = require('../util/Collection');
-const { Events, DefaultOptions, InviteScopes } = require('../util/Constants');
+const { Events, InviteScopes } = require('../util/Constants');
 const DataResolver = require('../util/DataResolver');
 const Intents = require('../util/Intents');
+const Options = require('../util/Options');
 const Permissions = require('../util/Permissions');
 const Structures = require('../util/Structures');
 
@@ -33,22 +35,16 @@ class Client extends BaseClient {
   constructor(options) {
     super(Object.assign({ _tokenType: 'Bot' }, options));
 
-    // Obtain shard details from environment or if present, worker threads
-    let data = process.env;
-    try {
-      // Test if worker threads module is present and used
-      data = require('worker_threads').workerData || data;
-    } catch {
-      // Do nothing
-    }
+    const data = require('worker_threads').workerData ?? process.env;
+    const defaults = Options.createDefault();
 
-    if (this.options.shards === DefaultOptions.shards) {
+    if (this.options.shards === defaults.shards) {
       if ('SHARDS' in data) {
         this.options.shards = JSON.parse(data.SHARDS);
       }
     }
 
-    if (this.options.shardCount === DefaultOptions.shardCount) {
+    if (this.options.shardCount === defaults.shardCount) {
       if ('SHARD_COUNT' in data) {
         this.options.shardCount = Number(data.SHARD_COUNT);
       } else if (Array.isArray(this.options.shards)) {
@@ -187,7 +183,7 @@ class Client extends BaseClient {
    * @readonly
    */
   get readyTimestamp() {
-    return this.readyAt ? this.readyAt.getTime() : null;
+    return this.readyAt?.getTime() ?? null;
   }
 
   /**
@@ -247,7 +243,7 @@ class Client extends BaseClient {
    * @param {InviteResolvable} invite Invite code or URL
    * @returns {Promise<Invite>}
    * @example
-   * client.fetchInvite('https://discord.gg/bRCvFy9')
+   * client.fetchInvite('https://discord.gg/djs')
    *   .then(invite => console.log(`Obtained invite with code: ${invite.code}`))
    *   .catch(console.error);
    */
@@ -255,7 +251,7 @@ class Client extends BaseClient {
     const code = DataResolver.resolveInviteCode(invite);
     return this.api
       .invites(code)
-      .get({ query: { with_counts: true } })
+      .get({ query: { with_counts: true, with_expiration: true } })
       .then(data => new Invite(this, data));
   }
 
@@ -290,7 +286,7 @@ class Client extends BaseClient {
     return this.api
       .webhooks(id, token)
       .get()
-      .then(data => new Webhook(this, data));
+      .then(data => new Webhook(this, { token, ...data }));
   }
 
   /**
@@ -340,7 +336,7 @@ class Client extends BaseClient {
       channels++;
 
       messages += channel.messages.cache.sweep(
-        message => now - (message.editedTimestamp || message.createdTimestamp) > lifetimeMs,
+        message => now - (message.editedTimestamp ?? message.createdTimestamp) > lifetimeMs,
       );
     }
 
@@ -363,6 +359,18 @@ class Client extends BaseClient {
       .guilds(id)
       .preview.get()
       .then(data => new GuildPreview(this, data));
+  }
+
+  /**
+   * Obtains the widget of a guild from Discord, available for guilds with the widget enabled.
+   * @param {GuildResolvable} guild The guild to fetch the widget for
+   * @returns {Promise<Widget>}
+   */
+  async fetchWidget(guild) {
+    const id = this.guilds.resolveID(guild);
+    if (!id) throw new TypeError('INVALID_TYPE', 'guild', 'GuildResolvable');
+    const data = await this.api.guilds(id, 'widget.json').get();
+    return new Widget(this, data);
   }
 
   /**
@@ -462,8 +470,8 @@ class Client extends BaseClient {
       throw new TypeError('CLIENT_INVALID_OPTION', 'shards', "'auto', a number or array of numbers");
     }
     if (options.shards && !options.shards.length) throw new RangeError('CLIENT_INVALID_PROVIDED_SHARDS');
-    if (typeof options.messageCacheMaxSize !== 'number' || isNaN(options.messageCacheMaxSize)) {
-      throw new TypeError('CLIENT_INVALID_OPTION', 'messageCacheMaxSize', 'a number');
+    if (typeof options.makeCache !== 'function') {
+      throw new TypeError('CLIENT_INVALID_OPTION', 'makeCache', 'a function');
     }
     if (typeof options.messageCacheLifetime !== 'number' || isNaN(options.messageCacheLifetime)) {
       throw new TypeError('CLIENT_INVALID_OPTION', 'The messageCacheLifetime', 'a number');
@@ -491,6 +499,12 @@ class Client extends BaseClient {
     }
     if (typeof options.retryLimit !== 'number' || isNaN(options.retryLimit)) {
       throw new TypeError('CLIENT_INVALID_OPTION', 'retryLimit', 'a number');
+    }
+    if (
+      typeof options.rejectOnRateLimit !== 'undefined' &&
+      !(typeof options.rejectOnRateLimit === 'function' || Array.isArray(options.rejectOnRateLimit))
+    ) {
+      throw new TypeError('CLIENT_INVALID_OPTION', 'rejectOnRateLimit', 'an array or a function');
     }
   }
 }

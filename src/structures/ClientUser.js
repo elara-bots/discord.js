@@ -48,7 +48,7 @@ class ClientUser extends Structures.get('User') {
 
   /**
    * Edits the logged in client.
-   * @param {Object} data The new data
+   * @param {APIModifyClientData} data The new data
    * @param {string} [data.username] The new username
    * @param {BufferResolvable|Base64Resolvable} [data.avatar] The new avatar
    */
@@ -56,8 +56,7 @@ class ClientUser extends Structures.get('User') {
     const newData = await this.client.api.users('@me').patch({ data });
     this.client.token = newData.token;
     const { updated } = this.client.actions.UserUpdate.handle(newData);
-    if (updated) return updated;
-    return this;
+    return updated ?? this;
   }
 
   /**
@@ -104,7 +103,7 @@ class ClientUser extends Structures.get('User') {
    * @property {PresenceStatusData} [status] Status of the user
    * @property {boolean} [afk] Whether the user is AFK
    * @property {ActivitiesOptions[]} [activities] Activity the user is playing
-   * @property {?number|number[]} [shardID] Shard Id(s) to have the activity set on
+   * @property {?(number|number[])} [shardID] Shard Id(s) to have the activity set on
    */
 
   /**
@@ -131,7 +130,7 @@ class ClientUser extends Structures.get('User') {
   /**
    * Sets the status of the client user.
    * @param {PresenceStatusData} status Status to change to
-   * @param {?number|number[]} [shardID] Shard ID(s) to have the activity set on
+   * @param {?(number|number[])} [shardID] Shard ID(s) to have the activity set on
    * @returns {Presence}
    * @example
    * // Set the client user's status
@@ -143,8 +142,7 @@ class ClientUser extends Structures.get('User') {
 
   /**
    * Options for setting an activity.
-   * @typedef ActivityOptions
-   * @type {Object}
+   * @typedef {Object} ActivityOptions
    * @property {string} [name] Name of the activity
    * @property {string} [url] Twitch / YouTube stream URL
    * @property {ActivityType|number} [type] Type of the activity
@@ -161,7 +159,7 @@ class ClientUser extends Structures.get('User') {
    * client.user.setActivity('discord.js', { type: 'WATCHING' });
    */
   setActivity(name, options = {}) {
-    if (!name) return this.setPresence({ activities: null, shardID: options.shardID });
+    if (!name) return this.setPresence({ activities: [], shardID: options.shardID });
 
     const activity = Object.assign({}, options, typeof name === 'object' ? name : { name });
     return this.setPresence({ activities: [activity], shardID: activity.shardID });
@@ -179,3 +177,8 @@ class ClientUser extends Structures.get('User') {
 }
 
 module.exports = ClientUser;
+
+/**
+ * @external APIModifyClientData
+ * @see {@link https://discord.com/developers/docs/resources/user#modify-current-user-json-params}
+ */
