@@ -3228,6 +3228,7 @@ declare module 'discord.js' {
     restGlobalRateLimit?: number;
     restSweepInterval?: number;
     retryLimit?: number;
+    failIfNotExists?: boolean;
     presence?: PresenceData;
     intents: BitFieldResolvable<IntentsString, number>;
     ws?: WebSocketOptions;
