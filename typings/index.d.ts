@@ -1103,7 +1103,6 @@ declare module 'discord.js' {
     public readonly joinedAt: Date | null;
     public joinedTimestamp: number | null;
     public readonly kickable: boolean;
-    public lastMessageChannelID: Snowflake | null;
     public readonly manageable: boolean;
     public nickname: string | null;
     public readonly partial: false;
@@ -2091,7 +2090,6 @@ declare module 'discord.js' {
     public readonly dmChannel: DMChannel | null;
     public flags: Readonly<UserFlags> | null;
     public id: Snowflake;
-    public lastMessageID: Snowflake | null;
     public readonly partial: false;
     public readonly presence: Presence;
     public system: boolean;
@@ -2783,13 +2781,13 @@ declare module 'discord.js' {
   ): Constructable<T & Omit<TextBasedChannelFields, I>>;
 
   interface PartialTextBasedChannelFields {
-    lastMessageID: Snowflake | null;
-    readonly lastMessage: Message | null;
     send(options: string | MessagePayload | MessageOptions): Promise<Message>;
   }
 
   interface TextBasedChannelFields extends PartialTextBasedChannelFields {
     _typing: Map<string, TypingData>;
+    lastMessageID: Snowflake | null;
+    readonly lastMessage: Message | null;
     lastPinTimestamp: number | null;
     readonly lastPinAt: Date | null;
     typing: boolean;
