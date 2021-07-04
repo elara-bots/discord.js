@@ -32,19 +32,7 @@ class User extends Base {
     this.system = null;
 
     this.flags = null;
-
-    /**
-     * The ID of the last message sent by the user, if one was sent
-     * @type {?Snowflake}
-     */
-    this.lastMessageID = null;
-
-    /**
-     * The ID of the channel for the last message sent by the user, if one was sent
-     * @type {?Snowflake}
-     */
-    this.lastMessageChannelID = null;
-
+    
     this._patch(data);
   }
 
@@ -143,15 +131,6 @@ class User extends Base {
    */
   get createdAt() {
     return new Date(this.createdTimestamp);
-  }
-
-  /**
-   * The Message object of the last message sent by the user, if one was sent
-   * @type {?Message}
-   * @readonly
-   */
-  get lastMessage() {
-    return this.client.channels.resolve(this.lastMessageChannelID)?.messages.resolve(this.lastMessageID) ?? null;
   }
 
   /**
@@ -340,8 +319,6 @@ class User extends Base {
         createdTimestamp: true,
         defaultAvatarURL: true,
         tag: true,
-        lastMessage: false,
-        lastMessageID: false,
       },
       ...props,
     );
