@@ -1774,7 +1774,7 @@ declare module 'discord.js' {
 
   export class SelectMenuInteraction extends MessageComponentInteraction {
     public componentType: 'SELECT_MENU';
-    public values: string[] | null;
+    public values: string[];
   }
 
   export class Shard extends EventEmitter {
