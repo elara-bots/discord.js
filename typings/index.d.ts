@@ -3827,6 +3827,7 @@ declare module 'discord.js' {
     | 'applications.entitlements'
     | 'applications.store.update'
     | 'connections'
+    | 'bot'
     | 'email'
     | 'identity'
     | 'guilds'
