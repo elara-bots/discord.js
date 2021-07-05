@@ -17,7 +17,7 @@ import {
 } from 'discord.js';
 
 const client: Client = new Client({
-  intents: Intents.NON_PRIVILEGED,
+  intents: Intents.FLAGS.GUILDS,
   makeCache: Options.cacheWithLimits({
     MessageManager: 200,
   }),
