@@ -399,7 +399,6 @@ class Guild extends AnonymousGuild {
         emojis: data.emojis,
       });
     }
-    
     if (!this.stickers) {
       /**
        * A manager of the stickers belonging to this guild
