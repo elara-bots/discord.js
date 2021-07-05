@@ -1678,6 +1678,7 @@ declare module 'discord.js' {
 
   export class Presence {
     constructor(client: Client, data?: unknown);
+    public readonly client: Client;
     public activities: Activity[];
     public clientStatus: ClientPresenceStatusData | null;
     public guild: Guild | null;
