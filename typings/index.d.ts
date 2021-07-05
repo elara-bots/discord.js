@@ -533,7 +533,8 @@ declare module 'discord.js' {
     public setUsername(username: string): Promise<this>;
   }
 
-  export class Options {
+  export class Options extends null {
+    private constructor();
     public static createDefaultOptions(): ClientOptions;
     public static cacheWithLimits(limits?: Record<string, number>): CacheFactory;
     public static cacheEverything(): CacheFactory;
