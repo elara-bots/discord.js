@@ -93,6 +93,12 @@ class Guild extends AnonymousGuild {
     this.stageInstances = new StageInstanceManager(this);
 
     /**
+     * A manager of the invites of this guild
+     * @type {GuildInviteManager}
+     */
+    this.invites = new GuildInviteManager(this);
+    
+    /**
      * Whether the bot has been removed from the guild
      * @type {boolean}
      */
