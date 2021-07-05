@@ -907,6 +907,7 @@ declare module 'discord.js' {
     public discoverySplash: string | null;
     public emojis: GuildEmojiManager;
     public explicitContentFilter: ExplicitContentFilterLevel;
+    public invites: GuildInviteManager;
     public readonly joinedAt: Date;
     public joinedTimestamp: number;
     public large: boolean;
@@ -2630,6 +2631,15 @@ declare module 'discord.js' {
     public fetch(options: UserResolvable | FetchBanOptions): Promise<GuildBan>;
     public fetch(options?: FetchBansOptions): Promise<Collection<Snowflake, GuildBan>>;
     public remove(user: UserResolvable, reason?: string): Promise<User>;
+  }
+
+  export class GuildInviteManager extends DataManager<Snowflake, Invite, InviteResolvable> {
+    constructor(guild: Guild, iterable?: Iterable<any>);
+    public guild: Guild;
+    public create(channel: GuildChannelResolvable, options?: CreateInviteOptions): Promise<Invite>;
+    public fetch(options: InviteResolvable | FetchInviteOptions): Promise<Invite>;
+    public fetch(options?: FetchInvitesOptions): Promise<Collection<string, Invite>>;
+    public delete(invite: InviteResolvable, reason?: string): Promise<Invite>;
   }
 
   export class GuildMemberRoleManager extends DataManager<Snowflake, Role, RoleResolvable> {
