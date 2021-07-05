@@ -331,6 +331,7 @@ exports.WSEvents = keyMirror([
  * * `applications.store.update`: allows reading and updating of store data for a users applications
  * * `connections`: makes the endpoint for getting a users connections available
  * * `email`: allows the `/users/@me` endpoint return with an email
+ * * `bot`: makes the bot join the selected guild
  * * `identify`: allows the `/users/@me` endpoint without an email
  * * `guilds`: makes the `/users/@me/guilds` endpoint available for a user
  * * `guilds.join`: allows the bot to join the user to any guild it is in using Guild#addMember
@@ -345,6 +346,7 @@ exports.InviteScopes = [
   'applications.store.update',
   'connections',
   'email',
+  'bot',
   'identity',
   'guilds',
   'guilds.join',
