@@ -932,6 +932,7 @@ declare module 'discord.js' {
     public readonly shard: WebSocketShard;
     public shardID: number;
     public stageInstances: StageInstanceManager;
+    public stickers: GuildStickerManager;
     public readonly systemChannel: TextChannel | null;
     public systemChannelFlags: Readonly<SystemChannelFlags>;
     public systemChannelID: Snowflake | null;
@@ -1027,6 +1028,7 @@ declare module 'discord.js' {
       | Message
       | Integration
       | StageInstance
+      | Sticker
       | { id: Snowflake }
       | null;
     public targetType: GuildAuditLogsTarget;
@@ -2740,6 +2742,21 @@ declare module 'discord.js' {
     public edit(role: RoleResolvable, options: RoleData, reason?: string): Promise<Role>;
   }
 
+ export class GuildStickerManager extends CachedManager<Snowflake, Sticker, StickerResolvable> {
+  public constructor(guild: Guild, iterable?: Iterable<any>);
+  public guild: Guild;
+  public create(
+    file: BufferResolvable | Stream | FileOptions | MessageAttachment,
+    name: string,
+    tags: string,
+    options?: GuildStickerCreateOptions,
+  ): Promise<Sticker>;
+  public edit(sticker: StickerResolvable, data?: GuildStickerEditData, reason?: string): Promise<Sticker>;
+  public delete(sticker: StickerResolvable, reason?: string): Promise<void>;
+  public fetch(id: Snowflake, options?: BaseFetchOptions): Promise<Sticker>;
+  public fetch(id?: Snowflake, options?: BaseFetchOptions): Promise<Collection<Snowflake, Sticker>>;
+}
+
   export class StageInstanceManager extends CachedManager<Snowflake, StageInstance, StageInstanceResolvable> {
     constructor(guild: Guild, iterable?: Iterable<any>);
     public guild: Guild;
@@ -2982,6 +2999,8 @@ declare module 'discord.js' {
     INVALID_FORM_BODY: 50035;
     INVITE_ACCEPTED_TO_GUILD_NOT_CONTAINING_BOT: 50036;
     INVALID_API_VERSION: 50041;
+    FILE_UPLOADED_EXCEEDS_MAXIMUM_SIZE: 50045;
+    INVALID_FILE_UPLOADED: 50046;
     CANNOT_SELF_REDEEM_GIFT: 50054;
     PAYMENT_SOURCE_REQUIRED: 50070;
     CANNOT_DELETE_COMMUNITY_REQUIRED_CHANNEL: 50074;
@@ -2997,7 +3016,9 @@ declare module 'discord.js' {
     MESSAGE_ALREADY_HAS_THREAD: 160004;
     THREAD_LOCKED: 160005;
     MAXIMUM_ACTIVE_THREADS: 160006;
-    MAXIMUM_ACTIVE_ANNOUCEMENT_THREAD: 160007;
+    MAXIMUM_ACTIVE_ANNOUNCEMENT_THREADS: 160007;
+    INVALID_JSON_FOR_UPLOADED_LOTTIE_FILE: 170001;
+    LOTTIE_ANIMATION_MAXIMUM_DIMENSIONS_EXCEEDED: 170005;
   }
 
   interface ApplicationAsset {
@@ -3536,6 +3557,9 @@ declare module 'discord.js' {
     STAGE_INSTANCE_CREATE?: number;
     STAGE_INSTANCE_UPDATE?: number;
     STAGE_INSTANCE_DELETE?: number;
+    STICKER_CREATE?: number;
+    STICKER_UPDATE?: number;
+    STICKER_DELETE?: number;
   }
 
   type GuildAuditLogsActionType = 'CREATE' | 'DELETE' | 'UPDATE' | 'ALL';
@@ -3561,6 +3585,7 @@ declare module 'discord.js' {
     MESSAGE?: string;
     INTEGRATION?: string;
     STAGE_INSTANCE?: string;
+    STAGE?: string;
     UNKNOWN?: string;
   }
 
@@ -3654,6 +3679,17 @@ declare module 'discord.js' {
   interface GuildEmojiEditData {
     name?: string;
     roles?: Collection<Snowflake, Role> | RoleResolvable[];
+  }
+  
+  export interface GuildStickerCreateOptions {
+    description?: string | null;
+    reason?: string;
+  }
+  
+  export interface GuildStickerEditData {
+    name?: string;
+    description?: string | null;
+    tags?: string;
   }
 
   type GuildFeatures =
@@ -4007,6 +4043,7 @@ declare module 'discord.js' {
     allowedMentions?: MessageMentionOptions;
     files?: (FileOptions | BufferResolvable | Stream | MessageAttachment)[];
     reply?: ReplyOptions;
+    stickers?: StickerResolvable[];
   }
 
   type MessageReactionResolvable =
@@ -4403,11 +4440,11 @@ declare module 'discord.js' {
 
   type Status = number;
 
-  type StickerFormatType = keyof typeof StickerFormatTypes;
+  export type StickerFormatType = keyof typeof StickerFormatTypes;
   
-  type StickerResolvable = Sticker | Snowflake;
+  export type StickerResolvable = Sticker | Snowflake;
   
-  type StickerType = keyof typeof StickerTypes;
+  export type StickerType = keyof typeof StickerTypes;
 
   type SystemChannelFlagsString =
     | 'SUPPRESS_JOIN_NOTIFICATIONS'
@@ -4584,7 +4621,8 @@ declare module 'discord.js' {
     | 'INTERACTION_CREATE'
     | 'STAGE_INSTANCE_CREATE'
     | 'STAGE_INSTANCE_UPDATE'
-    | 'STAGE_INSTANCE_DELETE';
+    | 'STAGE_INSTANCE_DELETE'
+    | 'GUILD_STICKERS_UPDATE';
 
   type Serialized<T> = T extends symbol | bigint | (() => unknown)
     ? never
