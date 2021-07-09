@@ -909,7 +909,6 @@ declare module 'discord.js' {
     public discoverySplash: string | null;
     public emojis: GuildEmojiManager;
     public explicitContentFilter: ExplicitContentFilterLevel;
-    public invites: GuildInviteManager;
     public readonly joinedAt: Date;
     public joinedTimestamp: number;
     public large: boolean;
@@ -3465,6 +3464,15 @@ declare module 'discord.js' {
     before?: Snowflake;
     after?: Snowflake;
     limit?: number;
+  }
+
+  interface FetchInviteOptions extends BaseFetchOptions {
+    code: string;
+  }
+
+  interface FetchInvitesOptions {
+    channelID?: GuildChannelResolvable;
+    cache?: boolean;
   }
 
   interface FetchArchivedThreadOptions {
