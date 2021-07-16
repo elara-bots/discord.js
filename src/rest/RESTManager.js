@@ -14,6 +14,7 @@ class RESTManager {
     this.tokenPrefix = tokenPrefix;
     this.versioned = true;
     this.globalTimeout = null;
+    
     if (client.options.restSweepInterval > 0) {
       this.sweepInterval = setInterval(() => {
         this.handlers.sweep(handler => handler._inactive);
