@@ -59,12 +59,14 @@ class UserManager extends BaseManager {
    * @returns {Promise<User>}
    */
   async fetch(id, cache = true, force = false) {
+    console.log(`[USER:MANAGER:FETCH]: ID: ${id} | Cache: ${cache} | Force: ${force}`);
     if (!force) {
       const existing = this.cache.get(id);
       if (existing && !existing.partial) return existing;
     }
 
     const data = await this.client.api.users(id).get();
+    console.log(`[USER:MANAGER:FETCH]: ID: ${id}`, data);
     return this.add(data, cache);
   }
 }
