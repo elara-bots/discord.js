@@ -169,17 +169,17 @@ class TextBasedChannel {
       const endpoint = this.client.api.channels[this.id].typing;
       Object.assign(entry, {
         count: count || 1,
-        interval: this.client.setInterval(() => {
+        interval: setInterval(() => {
           endpoint.post().catch(error => {
-            this.client.clearInterval(entry.interval);
+            clearInterval(entry.interval);
             this.client.user._typing.delete(this.id);
             reject(error);
           });
-        }, 9000),
+        }, 9000).unref(),
         resolve,
       });
       endpoint.post().catch(error => {
-        this.client.clearInterval(entry.interval);
+        clearInterval(entry.interval);
         this.client.user._typing.delete(this.id);
         reject(error);
       });
@@ -205,7 +205,7 @@ class TextBasedChannel {
       const entry = this.client.user._typing.get(this.id);
       entry.count--;
       if (entry.count <= 0 || force) {
-        this.client.clearInterval(entry.interval);
+        clearInterval(entry.interval);
         this.client.user._typing.delete(this.id);
         entry.resolve();
       }

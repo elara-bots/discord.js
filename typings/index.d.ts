@@ -149,22 +149,13 @@ declare module 'discord.js' {
 
   export class BaseClient extends EventEmitter {
     constructor(options?: ClientOptions);
-    private _timeouts: Set<NodeJS.Timeout>;
-    private _intervals: Set<NodeJS.Timeout>;
-    private _immediates: Set<NodeJS.Immediate>;
     private readonly api: object;
     private rest: object;
     private decrementMaxListeners(): void;
     private incrementMaxListeners(): void;
 
     public options: ClientOptions;
-    public clearInterval(interval: NodeJS.Timeout): void;
-    public clearTimeout(timeout: NodeJS.Timeout): void;
-    public clearImmediate(timeout: NodeJS.Immediate): void;
     public destroy(): void;
-    public setInterval(fn: (...args: any[]) => void, delay: number, ...args: any[]): NodeJS.Timeout;
-    public setTimeout(fn: (...args: any[]) => void, delay: number, ...args: any[]): NodeJS.Timeout;
-    public setImmediate(fn: (...args: any[]) => void, ...args: any[]): NodeJS.Immediate;
     public toJSON(...props: { [key: string]: boolean | string }[]): object;
   }
 

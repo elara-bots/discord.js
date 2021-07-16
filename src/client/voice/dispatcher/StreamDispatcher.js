@@ -234,7 +234,7 @@ class StreamDispatcher extends Writable {
       const next = FRAME_LENGTH + this.count * FRAME_LENGTH - (Date.now() - this.startTime - this._pausedTime);
       setTimeout(() => {
         if ((!this.pausedSince || this._silence) && this._writeCallback) this._writeCallback();
-      }, next);
+      }, next).unref();
     }
     this._sdata.sequence++;
     this._sdata.timestamp += TIMESTAMP_INC;

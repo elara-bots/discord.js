@@ -24,7 +24,7 @@ class TypingStart extends Action {
 
         typing.lastTimestamp = timestamp;
         typing.elapsedTime = Date.now() - typing.since;
-        this.client.clearTimeout(typing.timeout);
+        clearTimeout(typing.timeout);
         typing.timeout = this.tooLate(channel, user);
       } else {
         const since = new Date();
@@ -49,9 +49,9 @@ class TypingStart extends Action {
   }
 
   tooLate(channel, user) {
-    return channel.client.setTimeout(() => {
+    return setTimeout(() => {
       channel._typing.delete(user.id);
-    }, 10000);
+    }, 10000).unref();
   }
 }
 

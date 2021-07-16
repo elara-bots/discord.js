@@ -530,10 +530,10 @@ class Message extends Base {
       return this.channel.messages.delete(this.id, reason).then(() => this);
     } else {
       return new Promise(resolve => {
-        this.client.setTimeout(() => {
+        setTimeout(() => {
           if(!this.deleted) return resolve(this.delete({ reason }));
           return resolve(null);
-        }, timeout);
+        }, timeout).unref();
       });
     }
   }

@@ -285,7 +285,7 @@ class VoiceConnection extends EventEmitter {
    * @private
    */
   authenticateFailed(reason) {
-    this.client.clearTimeout(this.connectTimeout);
+    clearTimeout(this.connectTimeout);
     this.emit('debug', `Authenticate failed - ${reason}`);
     if (this.status === VoiceStatus.AUTHENTICATING) {
       /**
@@ -321,7 +321,7 @@ class VoiceConnection extends EventEmitter {
    */
   authenticate() {
     this.sendVoiceStateUpdate();
-    this.connectTimeout = this.client.setTimeout(() => this.authenticateFailed('VOICE_CONNECTION_TIMEOUT'), 15000);
+    this.connectTimeout = setTimeout(() => this.authenticateFailed('VOICE_CONNECTION_TIMEOUT'), 15000).unref();
   }
 
   /**
@@ -350,7 +350,7 @@ class VoiceConnection extends EventEmitter {
   disconnect() {
     this.emit('closing');
     this.emit('debug', 'disconnect() triggered');
-    this.client.clearTimeout(this.connectTimeout);
+    clearTimeout(this.connectTimeout);
     const conn = this.voiceManager.connections.get(this.channel.guild.id);
     if (conn === this) this.voiceManager.connections.delete(this.channel.guild.id);
     this.sendVoiceStateUpdate({
@@ -454,7 +454,7 @@ class VoiceConnection extends EventEmitter {
     Object.assign(this.authentication, data);
     this.status = VoiceStatus.CONNECTED;
     const ready = () => {
-      this.client.clearTimeout(this.connectTimeout);
+      clearTimeout(this.connectTimeout);
       this.emit('debug', `Ready with authentication details: ${JSON.stringify(this.authentication)}`);
       /**
        * Emitted once the connection is ready, when a promise to join a voice channel resolves,

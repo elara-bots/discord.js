@@ -123,7 +123,7 @@ class GuildTemplate extends Base {
 
       const handleGuild = guild => {
         if (guild.id === data.id) {
-          client.clearTimeout(timeout);
+          clearTimeout(timeout);
           resolveGuild(guild);
         }
       };
@@ -131,7 +131,7 @@ class GuildTemplate extends Base {
       client.incrementMaxListeners();
       client.on(Events.GUILD_CREATE, handleGuild);
 
-      const timeout = client.setTimeout(() => resolveGuild(client.guilds.add(data)), 10000);
+      const timeout = setTimeout(() => resolveGuild(client.guilds.add(data)), 10000).unref();
     });
   }
 

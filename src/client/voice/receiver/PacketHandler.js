@@ -112,15 +112,15 @@ class PacketHandler extends EventEmitter {
         userStat.speaking = Speaking.FLAGS.SPEAKING;
       }
       this.connection.onSpeaking({ user_id: userStat.userID, ssrc: ssrc, speaking: userStat.speaking });
-      speakingTimeout = this.receiver.connection.client.setTimeout(() => {
+      speakingTimeout = setTimeout(() => {
         try {
           this.connection.onSpeaking({ user_id: userStat.userID, ssrc: ssrc, speaking: 0 });
-          this.receiver.connection.client.clearTimeout(speakingTimeout);
+          clearTimeout(speakingTimeout);
           this.speakingTimeouts.delete(ssrc);
         } catch {
           // Connection already closed, ignore
         }
-      }, DISCORD_SPEAKING_DELAY);
+      }, DISCORD_SPEAKING_DELAY).unref();
       this.speakingTimeouts.set(ssrc, speakingTimeout);
     } else {
       speakingTimeout.refresh();

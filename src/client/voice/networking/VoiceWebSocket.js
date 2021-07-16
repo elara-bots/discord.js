@@ -148,7 +148,7 @@ class VoiceWebSocket extends EventEmitter {
    */
   onClose() {
     this.emit('debug', `[WS] closed`);
-    if (!this.dead) this.client.setTimeout(this.connect.bind(this), this.attempts * 1000);
+    if (!this.dead) setTimeout(this.connect.bind(this), this.attempts * 1000).unref();
   }
 
   /**
@@ -237,9 +237,9 @@ class VoiceWebSocket extends EventEmitter {
        * @event VoiceWebSocket#warn
        */
       this.emit('warn', 'A voice heartbeat interval is being overwritten');
-      this.client.clearInterval(this.heartbeatInterval);
+      clearInterval(this.heartbeatInterval);
     }
-    this.heartbeatInterval = this.client.setInterval(this.sendHeartbeat.bind(this), interval);
+    this.heartbeatInterval = setInterval(this.sendHeartbeat.bind(this), interval).unref();
   }
 
   /**
@@ -250,7 +250,7 @@ class VoiceWebSocket extends EventEmitter {
       this.emit('warn', 'Tried to clear a heartbeat interval that does not exist');
       return;
     }
-    this.client.clearInterval(this.heartbeatInterval);
+    clearInterval(this.heartbeatInterval);
     this.heartbeatInterval = null;
   }
 

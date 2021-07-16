@@ -162,7 +162,10 @@ class Client extends BaseClient {
     this.readyAt = null;
 
     if (this.options.messageSweepInterval > 0) {
-      this.setInterval(this.sweepMessages.bind(this), this.options.messageSweepInterval * 1000);
+      this.sweepMessageInterval = setInterval(
+        this.sweepMessages.bind(this),
+        this.options.messageSweepInterval * 1000,
+      ).unref();
     }
   }
 
@@ -236,6 +239,7 @@ class Client extends BaseClient {
    */
   destroy() {
     super.destroy();
+    if (this.sweepMessageInterval) clearInterval(this.sweepMessageInterval);
     this.ws.destroy();
     this.token = null;
   }

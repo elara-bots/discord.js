@@ -163,7 +163,7 @@ class Shard extends EventEmitter {
         reject(new Error('SHARDING_READY_TIMEOUT', this.id));
       };
 
-      const spawnTimeoutTimer = setTimeout(onTimeout, spawnTimeout);
+      const spawnTimeoutTimer = setTimeout(onTimeout, spawnTimeout).unref();
       this.once('ready', onReady);
       this.once('disconnect', onDisconnect);
       this.once('death', onDeath);
