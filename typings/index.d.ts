@@ -1122,9 +1122,11 @@ declare module 'discord.js' {
     public name: string | null;
     public proxyURL: string;
     public size: number;
+    public description: string | null;
     public readonly spoiler: boolean;
     public url: string;
     public width: number | null;
+    public setDescription(description: string): this;
     public setFile(attachment: BufferResolvable | Stream, name?: string): this;
     public setName(name: string): this;
     public toJSON(): object;
