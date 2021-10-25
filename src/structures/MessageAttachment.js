@@ -20,6 +20,16 @@ class MessageAttachment {
     this.name = name;
     if (data) this._patch(data);
   }
+  
+  /**
+   * Sets the description of this attachment.
+   * @param {string} description The description of the file
+   * @returns {MessageAttachment} This attachment
+   */
+  setDescription(description) {
+    this.description = description;
+    return this;
+  }
 
   /**
    * Sets the file of this attachment.
@@ -79,6 +89,16 @@ class MessageAttachment {
      * @type {?number}
      */
     this.width = typeof data.width !== 'undefined' ? data.width : null;
+    
+    if ('description' in data) {
+       /**
+       * The description (alt text) of this attachment
+       * @type {?string}
+       */
+      this.description = data.description;
+    } else {
+      this.description ?? null;
+    }
   }
 
   /**
