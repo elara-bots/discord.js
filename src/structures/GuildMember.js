@@ -297,6 +297,7 @@ class GuildMember extends Base {
    * @property {Collection<Snowflake, Role>|RoleResolvable[]} [roles] The roles or role IDs to apply
    * @property {boolean} [mute] Whether or not the member should be muted
    * @property {boolean} [deaf] Whether or not the member should be deafened
+   * @property {Date|string|null} [communicationDisabledUntil] Whether or not the member should be timed out
    * @property {ChannelResolvable|null} [channel] Channel to move member to (if they are connected to voice), or `null`
    * if you want to kick them from voice
    */
@@ -310,15 +311,19 @@ class GuildMember extends Base {
   async edit(data, reason) {
     // Clone the data object for immutability
     const _data = { ...data };
-    if (_data.communicationDisabledUntil) {
-      if (_data.communicationDisabledUntil instanceof Date) {
-        _data.communication_disabled_until = _data.communicationDisabledUntil;
-        if(_data.communication_disabled_until.getTime() < Date.now()) throw new Error('COMMUNICATION_DISABLED_PAST_DATE');
+    if (typeof _data.communicationDisabledUntil !== "undefined") {
+      if (_data.communicationDisabledUntil === null) {
+          _data.communication_disabled_until = null;
       } else {
-        _data.communication_disabled_until = new Date(Date.now() + _data.communicationDisabledUntil * 1000);
-        if(_data.communication_disabled_until.getTime() < Date.now()) throw new Error('COMMUNICATION_DISABLED_PAST_DATE');
-      };
-      _data.communication_disabled_until = _data.communication_disabled_until.toISOString();
+        if (_data.communicationDisabledUntil instanceof Date) {
+            _data.communication_disabled_until = _data.communicationDisabledUntil;
+            if(_data.communication_disabled_until.getTime() < Date.now()) throw new Error('COMMUNICATION_DISABLED_PAST_DATE');
+        } else {
+            _data.communication_disabled_until = new Date(Date.now() + _data.communicationDisabledUntil * 1000);
+            if(_data.communication_disabled_until.getTime() < Date.now()) throw new Error('COMMUNICATION_DISABLED_PAST_DATE');
+        };
+        _data.communication_disabled_until = _data.communication_disabled_until.toISOString();
+      }
       delete _data.communicationDisabledUntil;
     };
     if (_data.channel) {
