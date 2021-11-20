@@ -308,31 +308,44 @@ class GuildMember extends Base {
    * @returns {Promise<GuildMember>}
    */
   async edit(data, reason) {
-    if (data.channel) {
-      data.channel = this.guild.channels.resolve(data.channel);
-      if (!data.channel || data.channel.type !== 'voice') {
+    // Clone the data object for immutability
+    const _data = { ...data };
+    if (_data.communicationDisabledUntil) {
+      if (_data.communicationDisabledUntil instanceof Date) {
+        _data.communication_disabled_until = _data.communicationDisabledUntil;
+        if(_data.communication_disabled_until.getTime() < Date.now()) throw new Error('COMMUNICATION_DISABLED_PAST_DATE');
+      } else {
+        _data.communication_disabled_until = new Date(Date.now() + _data.communicationDisabledUntil * 1000);
+        if(_data.communication_disabled_until.getTime() < Date.now()) throw new Error('COMMUNICATION_DISABLED_PAST_DATE');
+      };
+      _data.communication_disabled_until = _data.communication_disabled_until.toISOString();
+      delete _data.communicationDisabledUntil;
+    };
+    if (_data.channel) {
+        _data.channel = this.guild.channels.resolve(_data.channel);
+      if (!_data.channel || _data.channel.type !== 'voice') {
         throw new Error('GUILD_VOICE_CHANNEL_RESOLVE');
       }
-      data.channel_id = data.channel.id;
-      data.channel = undefined;
-    } else if (data.channel === null) {
-      data.channel_id = null;
-      data.channel = undefined;
+      _data.channel_id = _data.channel.id;
+      _data.channel = undefined;
+    } else if (_data.channel === null) {
+      _data.channel_id = null;
+      _data.channel = undefined;
     }
-    if (data.roles) data.roles = data.roles.map(role => (role instanceof Role ? role.id : role));
+    if (_data.roles) _data.roles = _data.roles.map(role => (role instanceof Role ? role.id : role));
     let endpoint = this.client.api.guilds(this.guild.id);
     if (this.user.id === this.client.user.id) {
-      const keys = Object.keys(data);
+      const keys = Object.keys(_data);
       if (keys.length === 1 && keys[0] === 'nick') endpoint = endpoint.members('@me').nick;
       else endpoint = endpoint.members(this.id);
     } else {
       endpoint = endpoint.members(this.id);
     }
-    await endpoint.patch({ data, reason });
+    const d = await endpoint.patch({ data: _data, reason });
 
     const clone = this._clone();
-    data.user = this.user;
-    clone._patch(data);
+    d.user = this.user;
+    clone._patch(d);
     return clone;
   }
   /**
