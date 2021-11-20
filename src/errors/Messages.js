@@ -12,7 +12,7 @@ const Messages = {
   WS_CLOSE_REQUESTED: 'WebSocket closed due to user request.',
   WS_CONNECTION_EXISTS: 'There is already an existing WebSocket connection.',
   WS_NOT_OPEN: (data = 'data') => `Websocket not open to send ${data}`,
-
+  COMMUNICATION_DISABLED_PAST_DATE: 'The given date can\'t be in the past',
   BITFIELD_INVALID: 'Invalid bitfield flag or number.',
 
   SHARDING_INVALID: 'Invalid shard settings were provided.',
