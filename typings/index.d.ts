@@ -850,6 +850,8 @@ declare module 'discord.js' {
     public readonly displayName: string;
     public readonly pending: boolean;
     public guild: Guild;
+    public readonly communicationDisabledUntil: Date | null;
+    public communicationDisabledUntilTimestamp: number | null;
     public readonly id: Snowflake;
     public readonly joinedAt: Date | null;
     public joinedTimestamp: number | null;
@@ -866,6 +868,7 @@ declare module 'discord.js' {
     public readonly voice: VoiceState;
     public avatarURL(options?: ImageURLOptions & { dynamic?: boolean }): string | null;
     public displayAvatarURL(options?: ImageURLOptions & { dynamic?: boolean }): string;
+    public disableCommunication(duration: number | Date | null, reason?: string): Promise<GuildMember>;
     public ban(options?: BanOptions): Promise<GuildMember>;
     public fetch(force?: boolean): Promise<GuildMember>;
     public createDM(force?: boolean): Promise<DMChannel>;
@@ -2756,6 +2759,7 @@ declare module 'discord.js' {
     mute?: boolean;
     deaf?: boolean;
     channel?: ChannelResolvable | null;
+    communicationDisabledUntil?: Date | string | number | null;
   }
 
   type GuildMemberResolvable = GuildMember | UserResolvable;
