@@ -363,6 +363,16 @@ class GuildMember extends Base {
   disableCommunication(seconds, reason) {
     return this.edit({ communicationDisabledUntil: seconds }, reason);
   }
+  
+  /**
+   * Sets the nickname for this member.
+   * @param {string} nick The nickname for the guild member
+   * @param {string} [reason] Reason for setting the nickname
+   * @returns {Promise<GuildMember>}
+   */
+  setNickname(nick, reason) {
+    return this.edit({ nick }, reason);
+  }
 
   /**
    * Creates a DM channel between the client and this member.
