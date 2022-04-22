@@ -24,6 +24,7 @@ class GenericAction {
   }
 
   getPayload(data, manager, id, partialType, cache) {
+    if (!("cache" in manager)) return undefined;
     const existing = manager.cache.get(id);
     if (!existing && this.client.options.partials.includes(partialType)) {
       return manager.add(data, cache);
@@ -49,6 +50,7 @@ class GenericAction {
   }
 
   getMessage(data, channel, cache) {
+    if (!("messages" in channel)) return undefined;
     const id = data.message_id || data.id;
     return (
       data.message ||
